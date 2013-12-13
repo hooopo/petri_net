@@ -25,16 +25,19 @@ class PetriNet::Net < PetriNet::Base
   # Add an object to the Petri Net.
   def <<(object)
     case object.class.to_s
-    when "PetriNet::Place": add_place(object)
-    when "PetriNet::Arc": add_arc(object)
-    when "PetriNet::Transition": add_transition(object)
+    when "PetriNet::Place" 
+        add_place(object)
+    when "PetriNet::Arc" 
+        add_arc(object)
+    when "PetriNet::Transition" 
+        add_transition(object)
     else raise "Unknown object #{object.class}."
     end
   end
 
   # Add a place to the list of places.
   def add_place(place)
-    if place.validate
+    if place.validate && !@places.include?(place.name) 
       @places[place.name] = place.id
       @objects[place.id] = place
       return true
@@ -44,7 +47,7 @@ class PetriNet::Net < PetriNet::Base
 
   # Add an arc to the list of arcs.
   def add_arc(arc)
-    if arc.validate
+    if arc.validate && !@arcs.include?(arc.name)
       @arcs[arc.name] = arc.id
       @objects[arc.id] = arc
       return true
@@ -54,7 +57,7 @@ class PetriNet::Net < PetriNet::Base
 
   # Add a transition to the list of transitions.
   def add_transition(transition)
-    if transition.validate
+    if transition.validate && !@transitions.include?(transition.name)
       @transitions[transition.name] = transition.id
       @objects[transition.id] = transition
       return true

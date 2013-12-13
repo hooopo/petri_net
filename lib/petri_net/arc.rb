@@ -70,11 +70,11 @@ module PetriNet
 
 		# Validate source or destination object
 		def validate_source_destination(object)
-			return if object.nil?
+			return false if object.nil?
 			return false if object.class.to_s != "PetriNet::Place" and object.class.to_s != "PetriNet::Transition"
 
-			return if @source.nil? or @source.class.to_s == object.class.to_s
-			return if @destination.nil? or @destination.class.to_s == object.class.to_s
+			#return if @source.nil? or @source.class.to_s == object.class.to_s
+			#return if @destination.nil? or @destination.class.to_s == object.class.to_s
 			return true
 		end
 	end 

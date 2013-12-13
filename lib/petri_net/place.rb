@@ -11,7 +11,7 @@ class PetriNet::Place < PetriNet::Base
     @id = next_object_id
     @name = (options[:name] or "Place#{@id}")
     @description = (options[:description] or "Place #{@id}")
-    @capacity = options[:capacity]
+    @capacity = options[:capacity].nil? ? -1 : options[:capacity]
     @inputs = Array.new
     @outputs = Array.new
 
@@ -38,7 +38,7 @@ class PetriNet::Place < PetriNet::Base
     return false if @id.nil? or @id < 0
     return false if @name.nil? or @name.strip.length <= 0
     return false if @description.nil? or @description.strip.length <= 0
-    return false if @capacity.nil? or @capacity <= 0
+    return false if @capacity.nil? or @capacity < -1
     return true
   end
 
