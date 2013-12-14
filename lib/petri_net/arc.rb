@@ -47,13 +47,28 @@ module PetriNet
 		end
 
 		# Validate this arc.
-		def validate
+		def validate(net)
 			return false if @id < 1
 			return false if @name.nil? or @name.length <= 0
 			return false if @weight < 1
 			return false if @source.nil? or @destination.nil?
 			return false if @source == @destination
 			return false if @source.class == @destination.class
+
+                        if @source.class.to_s == "PetriNet::Place"
+                            return net.objects.include? @source 
+                        elsif @source.class.to_s == "PetriNet::Transition"
+                            return net.objects.include? @source
+                        else
+                            return false
+                        end
+                        if @destination.class.to_s == "PetriNet::Place"
+                            return net.objects.include? @destination
+                        elsif @destination.class.to_s == "PetriNet::Transition"
+                            return net.objects.include? @destination
+                        else
+                            return false
+                        end
 			return true
 		end
 
@@ -66,12 +81,27 @@ module PetriNet
 			"\t#{@source.gv_id} -> #{@destination.gv_id} [ label = \"#{@name}\", headlabel = \"#{@weight}\" ];\n"
 		end
 
+                def need_update? net
+                    if net.objects[@source.id].nil? || (@source.name != net.objects[@source.id].name)
+                        return true
+                    end
+                    if  net.objects[@destination.id].nil? || (@destination.name != net.objects[@destination.id].name)
+                        return true
+                    end
+                end
+
+                def update net
+                    @source.id = net.objects.find_index @source
+                    @destination.id = net.objects.find_index @destination
+                end
+
 		private
 
 		# Validate source or destination object
 		def validate_source_destination(object)
 			return false if object.nil?
-			return false if object.class.to_s != "PetriNet::Place" and object.class.to_s != "PetriNet::Transition"
+
+                        return object.class.to_s == "PetriNet::Place" || object.class.to_s == "PetriNet::Transition"
 
 			#return if @source.nil? or @source.class.to_s == object.class.to_s
 			#return if @destination.nil? or @destination.class.to_s == object.class.to_s

@@ -49,5 +49,9 @@ module PetriNet
 		def to_gv
 			"\t#{self.gv_id} [ label = \"#{@name}\" ];\n"
 		end
+
+                def ==(object)
+                    return true if name == object.name && description = object.description
+                end
 	end 
 end

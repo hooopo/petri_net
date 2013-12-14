@@ -24,15 +24,20 @@ class PetriNet::Net < PetriNet::Base
 
   # Add an object to the Petri Net.
   def <<(object)
+    return if object.nil?  #TODO WORKAROUND
     case object.class.to_s
+    when "Array"
+        object.each {|o| self << o}
     when "PetriNet::Place" 
         add_place(object)
     when "PetriNet::Arc" 
         add_arc(object)
     when "PetriNet::Transition" 
         add_transition(object)
-    else raise "Unknown object #{object.class}."
+    else 
+        raise "(PetriNet) Unknown object #{object.class}."
     end
+    self
   end
 
   # Add a place to the list of places.
@@ -47,7 +52,10 @@ class PetriNet::Net < PetriNet::Base
 
   # Add an arc to the list of arcs.
   def add_arc(arc)
-    if arc.validate && !@arcs.include?(arc.name)
+    if (arc.validate self) && !@arcs.include?(arc.name)
+      if arc.need_update? self
+        arc.update self
+      end
       @arcs[arc.name] = arc.id
       @objects[arc.id] = arc
       return true
@@ -127,5 +135,12 @@ class PetriNet::Net < PetriNet::Base
     str += "}\n"    # Graph closure
 
     return str
+  end
+
+  def merge(net)
+      return self if self.equal? net
+      return false if net.class.to_s != "PetriNet::Net"
+      self << net.objects
+      self
   end
 end
