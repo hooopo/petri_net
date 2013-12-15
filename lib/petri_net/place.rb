@@ -14,6 +14,7 @@ class PetriNet::Place < PetriNet::Base
         @capacity = options[:capacity].nil? ? -1 : options[:capacity]
         @inputs = Array.new
         @outputs = Array.new
+        @markings = Array.new
 
         yield self unless block == nil
     end	
@@ -26,6 +27,15 @@ class PetriNet::Place < PetriNet::Base
     # Add an output arc
     def add_output(arc)
         @outputs << arc.id unless arc.nil?
+    end
+
+    def add_marking(marking)
+        if capacity == -1 || @markings.size <= @capacity
+            @markings << marking
+            return true
+        else
+            return false
+        end
     end
 
     # GraphViz ID

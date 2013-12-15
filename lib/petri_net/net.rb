@@ -24,7 +24,7 @@ class PetriNet::Net < PetriNet::Base
 
   # Add an object to the Petri Net.
   def <<(object)
-    return if object.nil?  #TODO WORKAROUND
+    return if object.nil?  #TODO WORKAROUND There should never be a nil here, even while merging.
     case object.class.to_s
     when "Array"
         object.each {|o| self << o}
@@ -39,13 +39,14 @@ class PetriNet::Net < PetriNet::Base
     end
     self
   end
+  alias_method :add_object, :<<
 
   # Add a place to the list of places.
   def add_place(place)
     if place.validate && !@places.include?(place.name) 
       @places[place.name] = place.id
       @objects[place.id] = place
-      return true
+      return place.id
     end
     return false
   end
@@ -58,7 +59,7 @@ class PetriNet::Net < PetriNet::Base
       end
       @arcs[arc.name] = arc.id
       @objects[arc.id] = arc
-      return true
+      return arc.id
     end
     return false
   end
@@ -68,7 +69,7 @@ class PetriNet::Net < PetriNet::Base
     if transition.validate && !@transitions.include?(transition.name)
       @transitions[transition.name] = transition.id
       @objects[transition.id] = transition
-      return true
+      return transition.id
     end
     return false
   end
