@@ -81,7 +81,7 @@ class CreateTest < Test::Unit::TestCase
     def test_create_marking
         place = PetriNet::Place.new(:name => 'Hydrogen')
         marking = PetriNet::Marking.new
-        place.add_marking marking
+        place.add_marking
         assert place.markings.length > 0
     end
 

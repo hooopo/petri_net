@@ -30,14 +30,18 @@ class PetriNet::Place < PetriNet::Base
         @outputs << arc.id unless arc.nil?
     end
 
-    def add_marking(marking = PetriNet::Marking.new)
-        if capacity == -1 || @markings.size <= @capacity
-            @markings << marking
+    def add_marking(count = 1)
+        if capacity == -1 || count <= @capacity
+            count.times do
+                @markings << PetriNet::Marking.new
+            end
             return true
         else
             raise "Tried to add more markings than possible"
         end
     end
+
+    alias_method :+, :add_marking
 
     def remove_marking(count = 1)
         if @markings.size >= count
@@ -47,7 +51,7 @@ class PetriNet::Place < PetriNet::Base
             raise "Tried to remove more markings that possible" 
         end
     end
-
+    alias_method :-, :remove_marking
 
     # GraphViz ID
     def gv_id
