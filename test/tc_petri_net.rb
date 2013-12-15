@@ -80,7 +80,7 @@ class TestPetriNet < Test::Unit::TestCase
         #should not be here :-(
         transition = @net.objects[@net.transitions['Join']]
         assert !transition.activated?, "Transition should not be activated as there are no markings" 
-        
+
         @net.add_object PetriNet::Place.new(:name => 'Oxygen')
         arc = PetriNet::Arc.new do |a|
             a.name = 'Join.Oxygen'
@@ -88,11 +88,12 @@ class TestPetriNet < Test::Unit::TestCase
             a.add_source(@net.objects[@net.transitions['Join']])
             a.add_destination(@net.objects[@net.places['Oxygen']])
         end
-@net << arc
+        @net << arc
         @net.objects[@net.places['Hydrogen']].add_marking(2)
-binding.pry
         assert transition.activated?, "Transition should be activated now"
-
+        
+        transition.fire
+        assert_equal @net.objects[@net.places['Hydrogen']].markings.size, 0, "After firing the transituon, there should be no marking left in this place"
 
     end
 
