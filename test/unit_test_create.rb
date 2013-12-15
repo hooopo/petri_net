@@ -32,6 +32,16 @@ class CreateTest < Test::Unit::TestCase
         assert @net.objects.length > 1
         assert_equal @net.places["Hydrogen"], id
         assert_equal @net.objects[@net.places["Hydrogen"]], place
+
+        place.add_marking
+        assert place.markings.size == 1
+        place.add_marking
+        assert place.markings.size == 2
+        place.remove_marking
+        assert place.markings.size == 1
+        assert_raise( RuntimeError ){ place.remove_marking(4) }
+
+
     end
 
     def test_create_transition
@@ -68,6 +78,12 @@ class CreateTest < Test::Unit::TestCase
 
     end
 
+    def test_create_marking
+        place = PetriNet::Place.new(:name => 'Hydrogen')
+        marking = PetriNet::Marking.new
+        place.add_marking marking
+        assert place.markings.length > 0
+    end
 
 end
 COMMENTED_OUT = <<-EOC

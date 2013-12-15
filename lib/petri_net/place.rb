@@ -5,6 +5,7 @@ class PetriNet::Place < PetriNet::Base
     attr_accessor :capacity      # Token capacity
     attr_reader   :inputs        # Input arcs
     attr_reader   :outputs       # Output arcs
+    attr_reader   :markings      # Current Token/Markings
 
     # Initialize a new place.  Supports block configuration.
     def initialize(options = {}, &block)
@@ -29,14 +30,24 @@ class PetriNet::Place < PetriNet::Base
         @outputs << arc.id unless arc.nil?
     end
 
-    def add_marking(marking)
+    def add_marking(marking = PetriNet::Marking.new)
         if capacity == -1 || @markings.size <= @capacity
             @markings << marking
             return true
         else
-            return false
+            raise "Tried to add more markings than possible"
         end
     end
+
+    def remove_marking(count = 1)
+        if @markings.size >= count
+            ret = @markings.pop(count)
+            return ret unless ret.nil?
+        else
+            raise "Tried to remove more markings that possible" 
+        end
+    end
+
 
     # GraphViz ID
     def gv_id
