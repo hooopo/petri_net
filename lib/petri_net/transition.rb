@@ -52,18 +52,43 @@ module PetriNet
         end
 
         def ==(object)
-            return true if name == object.name && description = object.description
+            name == object.name && description = object.description
         end
 
         def preplaces
             raise "Not part of a net" if @net.nil?
             places = Array.new
-            places << inputs.map{|i| @net.objects[i].source}
+            places << @inputs.map{|i| @net.objects[i].source}
         end
 
         def postplaces
             raise "Not part of a net" if @net.nil?
-            outputs.map{|o| @net.objects[o].source}
+            @outputs.map{|o| @net.objects[o].source}
+        end
+
+        def activated?
+            raise "Not part of a net" if @net.nil?
+            @inputs.each do |i|
+                return false if @net.objects[i].source.markings.size < @net.objects[i].weight
+            end
+
+            @outputs.each do |o|
+                return false if @net.objects[o].destination.markings.size + @net.objects[o].weight > @net.objects[o].destination.capacity
+            end
+        end
+        alias_method :firable?, :activated?
+
+        def fire
+            raise "Not part of a net" if @net.nil?
+            return false unless activated?
+            @inputs.each do |i|
+                @net.objects[i].source.remove_marking @net.objects[i].weight
+            end
+
+            @outputs.each do |o|
+                @net.objects[o].destination.add_marking @net.objects[o].weight
+            end
+            true
         end
     end 
 end

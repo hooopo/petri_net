@@ -13,7 +13,7 @@ class PetriNet::Place < PetriNet::Base
         @id = next_object_id
         @name = (options[:name] or "Place#{@id}")
         @description = (options[:description] or "Place #{@id}")
-        @capacity = options[:capacity].nil? ? -1 : options[:capacity]
+        @capacity = options[:capacity].nil? ? Float::INFINITY : options[:capacity]
         @inputs = Array.new
         @outputs = Array.new
         @markings = Array.new
@@ -32,7 +32,7 @@ class PetriNet::Place < PetriNet::Base
     end
 
     def add_marking(count = 1)
-        if capacity == -1 || count <= @capacity
+        if count <= @capacity
             count.times do
                 @markings << PetriNet::Marking.new
             end

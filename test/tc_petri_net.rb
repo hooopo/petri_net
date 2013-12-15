@@ -7,7 +7,9 @@ require 'logger'
 require 'test/unit'
 require "#{`pwd`.strip}/../lib/petri_net" 
 
-class CreateTest < Test::Unit::TestCase
+require 'pry'
+
+class TestPetriNet < Test::Unit::TestCase
     attr_accessor :net
 
     def setup
@@ -66,7 +68,6 @@ class CreateTest < Test::Unit::TestCase
             a.add_source(@net.objects[@net.places['Hydrogen']])
             a.add_destination(@net.objects[@net.transitions['Join']])
         end
-
         assert_not_nil arc
         assert arc.validate @net
 
@@ -75,6 +76,23 @@ class CreateTest < Test::Unit::TestCase
         assert @net.objects.length > 1
         assert_equal @net.arcs['Hydrogen.Join'], id
         assert_equal @net.objects[@net.arcs['Hydrogen.Join']], arc
+
+        #should not be here :-(
+        transition = @net.objects[@net.transitions['Join']]
+        assert !transition.activated?, "Transition should not be activated as there are no markings" 
+        
+        @net.add_object PetriNet::Place.new(:name => 'Oxygen')
+        arc = PetriNet::Arc.new do |a|
+            a.name = 'Join.Oxygen'
+            a.weight = 1
+            a.add_source(@net.objects[@net.transitions['Join']])
+            a.add_destination(@net.objects[@net.places['Oxygen']])
+        end
+@net << arc
+        @net.objects[@net.places['Hydrogen']].add_marking(2)
+binding.pry
+        assert transition.activated?, "Transition should be activated now"
+
 
     end
 
