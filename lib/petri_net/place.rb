@@ -6,6 +6,7 @@ class PetriNet::Place < PetriNet::Base
     attr_reader   :inputs        # Input arcs
     attr_reader   :outputs       # Output arcs
     attr_reader   :markings      # Current Token/Markings
+    attr_writer   :net           # The net this place belongs to
 
     # Initialize a new place.  Supports block configuration.
     def initialize(options = {}, &block)
@@ -65,6 +66,17 @@ class PetriNet::Place < PetriNet::Base
         return false if @description.nil? or @description.strip.length <= 0
         return false if @capacity.nil? or @capacity < -1
         return true
+    end
+
+    def pretransitions
+        raise "Not part of a net" if @net.nil?
+        transitions = Array.new
+        places << inputs.map{|i| @net.objects[i].source}
+    end
+
+    def posttransitions
+        raise "Not part of a net" if @net.nil?
+        outputs.map{|o| @net.objects[o].source}
     end
 
     # Stringify this place.
