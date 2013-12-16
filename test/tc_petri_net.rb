@@ -95,6 +95,8 @@ class TestPetriNet < Test::Unit::TestCase
         transition.fire
         assert_equal @net.objects[@net.places['Hydrogen']].markings.size, 0, "After firing the transituon, there should be no marking left in this place"
 
+        @net.generate_weight_function
+
     end
 
     def test_create_marking

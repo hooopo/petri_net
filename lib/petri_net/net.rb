@@ -18,6 +18,8 @@ class PetriNet::Net < PetriNet::Base
         @transitions = Hash.new
         @markings = Hash.new
         @objects = Array.new
+        @up_to_date = false
+        @w_up_to_date = false
 
         yield self unless block == nil
     end	
@@ -80,11 +82,13 @@ class PetriNet::Net < PetriNet::Base
     # A Petri Net is said to be pure if it has no self-loops.  
     # Is this Petri Net pure?
     def pure?
+        raise "Not implemented yet"
     end
 
     # A Petri Net is said to be ordinary if all of its arc weights are 1's.
     # Is this Petri Net ordinary?
     def ordinary?
+        raise "Not implemented yet"
     end
 
     # Stringify this Petri Net.
@@ -138,7 +142,7 @@ class PetriNet::Net < PetriNet::Base
         @arcs.each_value {|id| str += @objects[id].to_gv }
         str += "}\n"    # Graph closure
 
-        return str
+        return ldcoder.comstr
     end
 
     def merge(net)
@@ -146,5 +150,37 @@ class PetriNet::Net < PetriNet::Base
         return false if net.class.to_s != "PetriNet::Net"
         self << net.objects
         self
+    end
+
+    def generate_reachability_graph(limited = true)
+        raise "Not implemented yet" unless limited
+        raise "Not implemented yet"
+         
+    end
+
+    def generate_weight_function
+        @weight = Hash.new
+        @arcs.each_value do |id|
+            arc = @objects[id]
+            @weight[[arc.source.id,arc.destination.id]] = arc.weight
+        end
+        @w_up_to_date = true
+    end
+
+    def w0(x,y)
+        generate_weight_function unless @w_up_to_date
+        return @weight[[x,y]].nil? ? 0 : @weight[[x,y]]
+    end
+
+    def update
+        generate_weight_funktion
+        @up_to_date = true
+    end
+
+    def update?
+        if @w_up_to_date && true #all up_to_date-caches!!!
+            @up_to_date = true
+        return @up_to_date
+        end
     end
 end
