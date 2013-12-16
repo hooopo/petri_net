@@ -51,6 +51,7 @@ class PetriNet::Net < PetriNet::Base
             place.net = self
             return place.id
         end
+        changed_structure
         return false
     end
 
@@ -65,6 +66,7 @@ class PetriNet::Net < PetriNet::Base
             arc.net = self
             return arc.id
         end
+        changed_structure
         return false
     end
 
@@ -76,6 +78,7 @@ class PetriNet::Net < PetriNet::Base
             transition.net = self
             return transition.id
         end
+        changed_structure
         return false
     end
 
@@ -182,5 +185,16 @@ class PetriNet::Net < PetriNet::Base
             @up_to_date = true
         return @up_to_date
         end
+    end
+
+private
+
+    def changed_structure
+        @w_up_to_date = false
+        @up_to_date = false
+    end
+
+    def changed_state
+        @up_to_date = false
     end
 end

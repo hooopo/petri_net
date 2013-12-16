@@ -95,7 +95,10 @@ class TestPetriNet < Test::Unit::TestCase
         transition.fire
         assert_equal @net.objects[@net.places['Hydrogen']].markings.size, 0, "After firing the transituon, there should be no marking left in this place"
 
-        @net.generate_weight_function
+        assert_equal 0, @net.w0(4,3), "There is no arc with this IDs, so there should be 0"
+        assert_equal 2, @net.w0(@net.places['Hydrogen'], @net.transitions['Join']), "There should be an arc with weight 2"
+        assert_equal 0, @net.w0(@net.transitions['Join'], @net.places['Hydrogen']), "Wrong direction"
+
 
     end
 
