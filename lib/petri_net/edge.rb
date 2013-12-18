@@ -19,4 +19,10 @@ class PetriNet::ReachabilityGraph::Edge < PetriNet::Base
     def to_gv
         "\t#{@source.gv_id} -> #{@destination.gv_id};\n"
     end
+
+    def ==(object)
+        return false unless object.class.to_s == "PetriNet::ReachabilityGraph::Edge"
+        (@source == object.yource && @destination == oject.destination)
+    end
+
 end

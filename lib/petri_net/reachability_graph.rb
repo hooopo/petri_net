@@ -6,6 +6,11 @@ class PetriNet::ReachabilityGraph < PetriNet::Base
     end
 
     def add_node(node)
+        node_index = @objects.index node
+        if (!node_index.nil?)
+            return @objects[node_index].id * -1
+        end
+
         if (node.validate && (!@nodes.include? node.name))
             @objects[node.id] = node
             @nodes[node.name] = node.id

@@ -82,6 +82,14 @@ class PetriNet::Net < PetriNet::Base
         return false
     end
 
+    def get_place(name)
+        @objects[@places[name]]
+    end
+
+    def get_transition(name)
+        @objects[@transitions[name]]
+    end
+
     # A Petri Net is said to be pure if it has no self-loops.  
     # Is this Petri Net pure?
     def pure?
@@ -159,7 +167,7 @@ class PetriNet::Net < PetriNet::Base
         raise "Not implemented yet" unless unlimited
         startmarkings = get_markings
         @graph = PetriNet::ReachabilityGraph.new
-        @graph << current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
+        @graph.add_node current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
 
         reachability_helper startmarkings, current_node
 
@@ -169,11 +177,11 @@ class PetriNet::Net < PetriNet::Base
 
     def reachability_helper(markings, source)
         @transitions.each_value do |tid|
-            markings = get_markings
             if @objects[tid].fire
-                @graph << current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
-                @graph << PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node)
-                reachability_helper markings, current_node
+                current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
+                current_node_id = @graph.add_node current_node 
+                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node) unless current_node_id < 0
+                reachability_helper get_markings, current_node unless (current_node_id < 0)
             end
             set_markings markings
         end
@@ -212,7 +220,7 @@ class PetriNet::Net < PetriNet::Base
     def set_markings(markings)
         i = 0
         @places.each_value do |pid| 
-            @objects[pid].markings = markings[i]
+            @objects[pid].set_marking markings[i]
             i = i+1
         end
         changed_state

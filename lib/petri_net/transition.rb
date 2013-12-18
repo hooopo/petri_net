@@ -78,6 +78,15 @@ module PetriNet
         end
         alias_method :firable?, :activated?
 
+        def activate!
+            @inputs.each do |i|
+                source = @net.objects[i].source
+                source.add_marking(@net.objects[i].weight - source.markings.size)
+            end
+
+            #what to do with outputs, if they have a capacity
+        end
+
         def fire
             raise "Not part of a net" if @net.nil?
             return false unless activated?

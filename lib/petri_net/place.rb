@@ -5,7 +5,7 @@ class PetriNet::Place < PetriNet::Base
     attr_accessor :capacity      # Token capacity
     attr_reader   :inputs        # Input arcs
     attr_reader   :outputs       # Output arcs
-    attr_accessor :markings      # Current Token/Markings
+    attr_reader :markings      # Current Token/Markings
     attr_writer   :net           # The net this place belongs to
 
     # Initialize a new place.  Supports block configuration.
@@ -40,6 +40,11 @@ class PetriNet::Place < PetriNet::Base
         else
             raise "Tried to add more markings than possible"
         end
+    end
+
+    def set_marking(count)
+        @markings = []
+        add_marking count
     end
 
     alias_method :+, :add_marking
@@ -86,9 +91,10 @@ class PetriNet::Place < PetriNet::Base
 
     # GraphViz definition
     def to_gv
-        "\t#{self.gv_id} [ label = \"#{@name}\" ];\n"
+        "\t#{self.gv_id} [ label = \"#{@name} #{@markings.size}  \" ];\n"
     end
     def ==(object)
         return true if name == object.name && description = object.description
     end
+
 end 

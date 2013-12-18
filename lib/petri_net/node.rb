@@ -1,5 +1,5 @@
 class PetriNet::ReachabilityGraph::Node < PetriNet::Base
-    attr_reader :name, :id
+    attr_reader :name, :id, :markings
     attr_accessor :graph
     def initialize(options = {}, &block)
         @id = next_object_id
@@ -23,6 +23,11 @@ class PetriNet::ReachabilityGraph::Node < PetriNet::Base
 
     def to_gv
         "\t#{self.gv_id} [ label = \"#{@markings}\" ];\n"
+    end
+
+    def ==(object)
+        return false unless object.class.to_s == "PetriNet::ReachabilityGraph::Node"
+        @markings == object.markings
     end
 
 end
