@@ -17,4 +17,12 @@ class PetriNet::ReachabilityGraph::Node < PetriNet::Base
         true
     end
 
+    def gv_id
+        "N#{@id}"
+    end
+
+    def to_gv
+        "\t#{self.gv_id} [ label = \"#{@markings}\" ];\n"
+    end
+
 end

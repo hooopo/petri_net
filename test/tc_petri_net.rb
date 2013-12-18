@@ -92,8 +92,7 @@ class TestPetriNet < Test::Unit::TestCase
         @net.objects[@net.places['Hydrogen']].add_marking(2)
         assert transition.activated?, "Transition should be activated now"
 
-
-        @net.generate_reachability_graph
+puts        @net.generate_reachability_graph.to_gv
 
 
 #puts 

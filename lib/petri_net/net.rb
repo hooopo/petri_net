@@ -145,7 +145,7 @@ class PetriNet::Net < PetriNet::Base
         @arcs.each_value {|id| str += @objects[id].to_gv }
         str += "}\n"    # Graph closure
 
-        return ldcoder.comstr
+        return str
     end
 
     def merge(net)
@@ -159,18 +159,19 @@ class PetriNet::Net < PetriNet::Base
         raise "Not implemented yet" unless unlimited
         startmarkings = get_markings
         @graph = PetriNet::ReachabilityGraph.new
-        @graph << current_node = PetriNet::ReachabilityGraph::Node.new(options: get_markings)
+        @graph << current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
 
         reachability_helper startmarkings, current_node
 
         set_markings startmarkings
+        @graph 
     end
 
     def reachability_helper(markings, source)
         @transitions.each_value do |tid|
             markings = get_markings
             if @objects[tid].fire
-                @graph << current_node = PetriNet::ReachabilityGraph::Node.new(options: get_markings)
+                @graph << current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
                 @graph << PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node)
                 reachability_helper markings, current_node
             end

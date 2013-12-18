@@ -18,7 +18,7 @@ class PetriNet::ReachabilityGraph < PetriNet::Base
     def add_edge(edge)
         if (edge.validate && (!@edges.include? edge.name))
             @objects[edge.id] = edge
-            @nodes[edge.name] = edge.id
+            @edges[edge.name] = edge.id
             edge.graph = self
             return edge.id
         end
@@ -40,5 +40,28 @@ class PetriNet::ReachabilityGraph < PetriNet::Base
         self
     end
     alias_method :add_object, :<<
+
+    def to_gv
+        # General graph options
+        str = "digraph #{@name} {\n"
+        str += "\t// General graph options\n"
+        str += "\trankdir = LR;\n"
+        str += "\tsize = \"10.5,7.5\";\n"
+        str += "\tnode [ style = filled, fillcolor = white, fontsize = 8.0 ]\n"
+        str += "\tedge [ arrowhead = vee, arrowsize = 0.5, fontsize = 8.0 ]\n"
+        str += "\n"
+
+        str += "\t// Nodes\n"
+        str += "\tnode [ shape = circle ];\n"
+        @nodes.each_value {|id| str += @objects[id].to_gv }
+        str += "\n"
+
+        str += "\t// Edges\n"
+        @edges.each_value {|id| str += @objects[id].to_gv }
+        str += "}\n"    # Graph closure
+
+        return str
+
+    end
 
 end

@@ -16,4 +16,7 @@ class PetriNet::ReachabilityGraph::Edge < PetriNet::Base
         true
     end
 
+    def to_gv
+        "\t#{@source.gv_id} -> #{@destination.gv_id};\n"
+    end
 end
