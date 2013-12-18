@@ -1,12 +1,12 @@
 class PetriNet::ReachabilityGraph < PetriNet::Base
     def initialize
         @objects = Array.new
-        @nodes = Array.new
-        @edges = Array.new
+        @nodes = Hash.new
+        @edges = Hash.new
     end
 
     def add_node(node)
-        if node.validate && !@nodes.include? node.name
+        if (node.validate && (!@nodes.include? node.name))
             @objects[node.id] = node
             @nodes[node.name] = node.id
             node.graph = self
@@ -16,7 +16,7 @@ class PetriNet::ReachabilityGraph < PetriNet::Base
     end
 
     def add_edge(edge)
-        if edge.validate && !@edges.include? edge.name
+        if (edge.validate && (!@edges.include? edge.name))
             @objects[edge.id] = edge
             @nodes[edge.name] = edge.id
             edge.graph = self

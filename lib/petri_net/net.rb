@@ -155,10 +155,27 @@ class PetriNet::Net < PetriNet::Base
         self
     end
 
-    def generate_reachability_graph(limited = true)
-        raise "Not implemented yet" unless limited
-        raise "Not implemented yet"
-         
+    def generate_reachability_graph(unlimited = true)
+        raise "Not implemented yet" unless unlimited
+        startmarkings = get_markings
+        @graph = PetriNet::ReachabilityGraph.new
+        @graph << current_node = PetriNet::ReachabilityGraph::Node.new(options: get_markings)
+
+        reachability_helper startmarkings, current_node
+
+        set_markings startmarkings
+    end
+
+    def reachability_helper(markings, source)
+        @transitions.each_value do |tid|
+            markings = get_markings
+            if @objects[tid].fire
+                @graph << current_node = PetriNet::ReachabilityGraph::Node.new(options: get_markings)
+                @graph << PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node)
+                reachability_helper markings, current_node
+            end
+            set_markings markings
+        end
     end
 
     def generate_weight_function
@@ -183,11 +200,24 @@ class PetriNet::Net < PetriNet::Base
     def update?
         if @w_up_to_date && true #all up_to_date-caches!!!
             @up_to_date = true
-        return @up_to_date
+            return @up_to_date
         end
     end
 
-private
+    def get_markings
+        @places.map{|key,pid| @objects[pid].markings.size}
+    end
+
+    def set_markings(markings)
+        i = 0
+        @places.each_value do |pid| 
+            @objects[pid].markings = markings[i]
+            i = i+1
+        end
+        changed_state
+    end
+
+    private
 
     def changed_structure
         @w_up_to_date = false

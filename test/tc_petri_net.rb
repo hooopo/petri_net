@@ -91,15 +91,23 @@ class TestPetriNet < Test::Unit::TestCase
         @net << arc
         @net.objects[@net.places['Hydrogen']].add_marking(2)
         assert transition.activated?, "Transition should be activated now"
-        
-        transition.fire
-        assert_equal @net.objects[@net.places['Hydrogen']].markings.size, 0, "After firing the transituon, there should be no marking left in this place"
-
-        assert_equal 0, @net.w0(4,3), "There is no arc with this IDs, so there should be 0"
-        assert_equal 2, @net.w0(@net.places['Hydrogen'], @net.transitions['Join']), "There should be an arc with weight 2"
-        assert_equal 0, @net.w0(@net.transitions['Join'], @net.places['Hydrogen']), "Wrong direction"
 
 
+        @net.generate_reachability_graph
+
+
+#puts 
+#        puts @net.get_markings
+#     puts    
+#        transition.fire
+#        assert_equal @net.objects[@net.places['Hydrogen']].markings.size, 0, "After firing the transituon, there should be no marking left in this place"
+#
+#        assert_equal 0, @net.w0(4,3), "There is no arc with this IDs, so there should be 0"
+#        assert_equal 2, @net.w0(@net.places['Hydrogen'], @net.transitions['Join']), "There should be an arc with weight 2"
+#        assert_equal 0, @net.w0(@net.transitions['Join'], @net.places['Hydrogen']), "Wrong direction"
+#
+#        puts @net.get_markings
+#puts
     end
 
     def test_create_marking

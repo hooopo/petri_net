@@ -5,7 +5,7 @@ class PetriNet::Place < PetriNet::Base
     attr_accessor :capacity      # Token capacity
     attr_reader   :inputs        # Input arcs
     attr_reader   :outputs       # Output arcs
-    attr_reader   :markings      # Current Token/Markings
+    attr_accessor :markings      # Current Token/Markings
     attr_writer   :net           # The net this place belongs to
 
     # Initialize a new place.  Supports block configuration.
