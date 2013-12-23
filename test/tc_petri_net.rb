@@ -17,13 +17,38 @@ class TestPetriNet < Test::Unit::TestCase
         @net.logger = Logger.new(STDOUT)
     end
 
+    def fill_net
+        @net << PetriNet::Place.new(:name => "testplace")
+        @net << PetriNet::Transition.new(:name => "testtrans")
+        arc = PetriNet::Arc.new do |a|
+            a.name = 'testarc'
+            a.weight = 2
+            a.add_source(@net.objects[@net.places['testplace']])
+            a.add_destination(@net.objects[@net.transitions['testtrans']])
+        end
+        @net << arc 
+    end
+
+    def teardown
+        @net = nil
+    end
+
     def test_create_net
         net = PetriNet::Net.new(:name => 'Water', :description => 'Creation of water from base elements.')
         assert_not_nil net
-        #needs more assertions
+        assert_equal "Water", net.name, "Name was not properly set"
+        assert_equal "Creation of water from base elements.", net.description,  "Description was not properly set"
+        assert_empty net.objects, "There should not be any Objects in this fresh and empty net"
+        assert_empty net.arcs, "There should not be any Objects in this fresh and empty net"
+        assert_empty net.transitions, "There should not be any Objects in this fresh and empty net"
+        assert_empty net.places, "There should not be any Objects in this fresh and empty net"
+        assert !net.up_to_date, "There are no cached functions calculated"
+        net.update
+        assert net.up_to_date, "Now we calculated all cached functions without changing anything afterwards, so this schould be up to date"
+        assert_empty net.get_markings, "No Places should mean no markings..."
     end
 
-    def test_create_place
+    def test_add_place
         # Create the place
         place = PetriNet::Place.new(:name => 'Hydrogen')
         assert_not_nil place
@@ -46,7 +71,7 @@ class TestPetriNet < Test::Unit::TestCase
 
     end
 
-    def test_create_transition
+    def test_add_transition
         # create the transition
         transition = PetriNet::Transition.new(:name => 'Join', :description => 'great testing transition')
         assert_not_nil transition
@@ -59,7 +84,41 @@ class TestPetriNet < Test::Unit::TestCase
         assert_equal @net.objects[@net.transitions['Join']], transition 
     end
 
-    def test_create_arc
+    def test_add_object()
+        assert_equal @net, @net << PetriNet::Place.new(:name => "testplace")
+        assert_equal 1, @net.places.size, "Added only one place, this means there should only be one place"
+        assert_equal 1, @net.objects_size, "Added only one place, this means there should only be one object"
+        net << PetriNet::Transition.new(:name => "testtrans")
+        assert_equal 1, @net.transitions.size, "Added only one transition, this means there should only be one transition"
+        assert_equal 2, @net.objects_size, "Added one transition to the place, this means there should be exactly two objects"
+        arc = PetriNet::Arc.new do |a|
+            a.name = 'testarc'
+            a.weight = 2
+            a.add_source(@net.objects[@net.places['testplace']])
+            a.add_destination(@net.objects[@net.transitions['testtrans']])
+        end
+        @net << arc 
+        assert_equal 1, @net.arcs.size, "Addes only one arc, this means there should only be one arc"
+        assert_equal 3, @net.objects_size, "Added an arc, so there should be exactly three objects now"
+        assert_raise(RuntimeError, "You can't add a Hash, so this should raise an Error"){@net << Hash.new}#
+        array = [PetriNet::Place.new, PetriNet::Transition.new, PetriNet::Transition.new]
+        assert_equal @net, @net << array, "Adding an array should result in the same as adding is one by one"
+        assert_equal 2, @net.places.size, "Adding an array should result in the same as adding is one by one"
+        assert_equal 3, @net.transitions.size, "Adding an array should result in the same as adding is one by one"
+        assert_equal 6, @net.objects_size, "Adding an array should result in the same as adding is one by one"
+    end
+
+    def test_get_place
+        @net << place = PetriNet::Place.new(:name => 'Test')
+        assert_equal place, @net.get_place('Test'), "should be the same as the given place"
+    end
+
+    def test_get_transition
+        @net << transition = PetriNet::Transition.new(:name => 'Test')
+        assert_equal transition, @net.get_transition('Test'), "should be the same transition als the given one"
+    end
+
+    def test_add_arc
         @net.add_object PetriNet::Transition.new(:name => 'Join', :description => 'great testing transition')
         @net.add_object PetriNet::Place.new(:name => 'Hydrogen')
         arc = PetriNet::Arc.new do |a|
@@ -69,7 +128,7 @@ class TestPetriNet < Test::Unit::TestCase
             a.add_destination(@net.objects[@net.transitions['Join']])
         end
         assert_not_nil arc
-        assert arc.validate @net
+        assert arc.validate(@net), "the created arc is not valid"
 
         #add the arc
         id = @net.add_arc arc
@@ -92,7 +151,7 @@ class TestPetriNet < Test::Unit::TestCase
         @net.objects[@net.places['Hydrogen']].add_marking(2)
         assert transition.activated?, "Transition should be activated now"
 
-puts        @net.generate_reachability_graph.to_gv
+#puts        @net.generate_reachability_graph.to_gv
 
 
 #puts 
@@ -109,12 +168,46 @@ puts        @net.generate_reachability_graph.to_gv
 #puts
     end
 
-    def test_create_marking
-        place = PetriNet::Place.new(:name => 'Hydrogen')
-        marking = PetriNet::Marking.new
-        place.add_marking
-        assert place.markings.length > 0
+
+    def test_merge
+        assert false, "not implemented yet" 
     end
+
+    def test_generate_reachability_graph
+        assert false, "not implemented yet" 
+    end
+
+    def test_w0
+        assert false, "not implemented yet" 
+    end
+
+    def test_update
+        assert false, "not implemented yet" 
+    end
+
+    def test_generate_weight_function
+        assert false, "not implemented yet" 
+    end
+
+    def test_get_markings
+        assert false, "not implemented yet" 
+    end
+
+    def test_set_markings
+        assert false, "not implemented yet" 
+    end
+
+    def test_objects_size
+        assert false, "not implemented yet" 
+    end
+
+
+ #   def test_create_marking
+ #       place = PetriNet::Place.new(:name => 'Hydrogen')
+ #       marking = PetriNet::Marking.new
+ #       place.add_marking
+ #       assert place.markings.length > 0
+ #   end
 
 end
 COMMENTED_OUT = <<-EOC

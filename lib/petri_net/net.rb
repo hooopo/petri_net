@@ -7,11 +7,13 @@ class PetriNet::Net < PetriNet::Base
     attr_reader   :transitions   # List of transitions
     attr_reader   :markings      # List of markings
     attr_reader   :objects       # Array of all objects in net
+#    attr_reader   :up_to_date    # is true if, and only if, the cached elements are calculated AND the net hasn't changed
+
 
     # Create new Petri Net definition.	
     def initialize(options = {}, &block)
         @name = (options[:name] or 'petri_net')
-        @filename = options[:filename]
+        @filename = (options[:filename] or @name)
         @description = (options[:description] or 'Petri Net')
         @places = Hash.new
         @arcs = Hash.new
@@ -202,16 +204,18 @@ class PetriNet::Net < PetriNet::Base
     end
 
     def update
-        generate_weight_funktion
+        generate_weight_function
         @up_to_date = true
     end
-
+    
+    # is true if, and only if, the cached elements are calculated AND the net hasn't changed
     def update?
         if @w_up_to_date && true #all up_to_date-caches!!!
             @up_to_date = true
             return @up_to_date
         end
     end
+    alias_method :up_to_date, :update?
 
     def get_markings
         @places.map{|key,pid| @objects[pid].markings.size}
@@ -224,6 +228,10 @@ class PetriNet::Net < PetriNet::Base
             i = i+1
         end
         changed_state
+    end
+
+    def objects_size
+        @objects.count{|o| !o.nil?}
     end
 
     private
