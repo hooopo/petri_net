@@ -57,9 +57,9 @@ module PetriNet
             return false if @source.class == @destination.class
 
             if @source.class.to_s == "PetriNet::Place"
-                return net.objects.include? @source 
+                return net.objects_include? @source 
             elsif @source.class.to_s == "PetriNet::Transition"
-                return net.objects.include? @source
+                return net.objects_include? @source
             else
                 return false
             end
@@ -83,17 +83,17 @@ module PetriNet
         end
 
         def need_update? net
-            if net.objects[@source.id].nil? || (@source.name != net.objects[@source.id].name)
+            if net.get_object(@source.id).nil? || (@source.name != net.get_object(@source.id).name)
                 return true
             end
-            if  net.objects[@destination.id].nil? || (@destination.name != net.objects[@destination.id].name)
+            if  net.get_object(@destination.id).nil? || (@destination.name != net.get_object(@destination.id).name)
                 return true
             end
         end
 
         def update net
-            @source.id = net.objects.find_index @source
-            @destination.id = net.objects.find_index @destination
+            @source.id = net.objects_find_index @source
+            @destination.id = net.objects_find_index @destination
         end
 
         private

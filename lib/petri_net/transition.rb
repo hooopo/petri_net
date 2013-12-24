@@ -69,19 +69,19 @@ module PetriNet
         def activated?
             raise "Not part of a net" if @net.nil?
             @inputs.each do |i|
-                return false if @net.objects[i].source.markings.size < @net.objects[i].weight
+                return false if @net.get_object(i).source.markings.size < @net.get_object(i).weight
             end
 
             @outputs.each do |o|
-                return false if @net.objects[o].destination.markings.size + @net.objects[o].weight > @net.objects[o].destination.capacity
+                return false if @net.get_object(o).destination.markings.size + @net.get_object(o).weight > @net.get_object(o).destination.capacity
             end
         end
         alias_method :firable?, :activated?
 
         def activate!
             @inputs.each do |i|
-                source = @net.objects[i].source
-                source.add_marking(@net.objects[i].weight - source.markings.size)
+                source = @net.get_object(i).source
+                source.add_marking(@net.get_object(i).weight - source.markings.size)
             end
 
             #what to do with outputs, if they have a capacity
@@ -91,11 +91,11 @@ module PetriNet
             raise "Not part of a net" if @net.nil?
             return false unless activated?
             @inputs.each do |i|
-                @net.objects[i].source.remove_marking @net.objects[i].weight
+                @net.get_object(i).source.remove_marking @net.get_object(i).weight
             end
 
             @outputs.each do |o|
-                @net.objects[o].destination.add_marking @net.objects[o].weight
+                @net.get_object(o).destination.add_marking @net.get_object(o).weight
             end
             true
         end

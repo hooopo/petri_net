@@ -6,7 +6,7 @@ class PetriNet::Net < PetriNet::Base
     attr_reader   :arcs          # List of arcs
     attr_reader   :transitions   # List of transitions
     attr_reader   :markings      # List of markings
-    attr_reader   :objects       # Array of all objects in net
+# should not be public available    attr_reader   :objects       # Array of all objects in net
 #    attr_reader   :up_to_date    # is true if, and only if, the cached elements are calculated AND the net hasn't changed
 
 
@@ -92,6 +92,10 @@ class PetriNet::Net < PetriNet::Base
         @objects[@transitions[name]]
     end
 
+    def get_arc(name)
+        @objects[@arcs[name]]
+    end
+
     # A Petri Net is said to be pure if it has no self-loops.  
     # Is this Petri Net pure?
     def pure?
@@ -161,7 +165,7 @@ class PetriNet::Net < PetriNet::Base
     def merge(net)
         return self if self.equal? net
         return false if net.class.to_s != "PetriNet::Net"
-        self << net.objects
+        self << net.get_objects
         self
     end
 
@@ -183,6 +187,7 @@ class PetriNet::Net < PetriNet::Base
             @weight[[arc.source.id,arc.destination.id]] = arc.weight
         end
         @w_up_to_date = true
+        @weight
     end
 
     def w0(x,y)
@@ -219,6 +224,22 @@ class PetriNet::Net < PetriNet::Base
 
     def objects_size
         @objects.count{|o| !o.nil?}
+    end
+
+    def objects_include?(object)
+        @objects.include?(object)
+    end
+
+    def get_object(id)
+        @objects[id]
+    end
+
+    def get_objects
+        @objects.clone
+    end
+
+    def objects_find_index(object)
+        @objects.find_index object
     end
 
     private

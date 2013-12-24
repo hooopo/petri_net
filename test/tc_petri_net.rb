@@ -21,8 +21,8 @@ class TestPetriNet < Test::Unit::TestCase
         arc = PetriNet::Arc.new do |a|
             a.name = 'testarc'
             a.weight = 2
-            a.add_source(@net.objects[@net.places['testplace']])
-            a.add_destination(@net.objects[@net.transitions['testtrans']])
+            a.add_source(@net.get_place 'testplace')
+            a.add_destination(@net.get_transition 'testtrans')
         end
         @net << arc 
     end
@@ -36,7 +36,7 @@ class TestPetriNet < Test::Unit::TestCase
         assert_not_nil net
         assert_equal "Water", net.name, "Name was not properly set"
         assert_equal "Creation of water from base elements.", net.description,  "Description was not properly set"
-        assert_empty net.objects, "There should not be any Objects in this fresh and empty net"
+        assert_equal 0, net.objects_size, "There should not be any Objects in this fresh and empty net"
         assert_empty net.arcs, "There should not be any Objects in this fresh and empty net"
         assert_empty net.transitions, "There should not be any Objects in this fresh and empty net"
         assert_empty net.places, "There should not be any Objects in this fresh and empty net"
@@ -54,16 +54,16 @@ class TestPetriNet < Test::Unit::TestCase
 
         # Add the place
         id = @net.add_place(place)
-        assert @net.objects.length > 1
-        assert_equal @net.places["Hydrogen"], id
-        assert_equal @net.objects[@net.places["Hydrogen"]], place
+        assert_equal 1, @net.objects_size
+        assert_equal id, @net.places["Hydrogen"]
+        assert_equal place, @net.get_place("Hydrogen")
 
         place.add_marking
-        assert place.markings.size == 1
+        assert_equal 1, place.markings.size
         place.add_marking
-        assert place.markings.size == 2
+        assert_equal 2, place.markings.size
         place.remove_marking
-        assert place.markings.size == 1
+        assert_equal 1, place.markings.size
         assert_raise( RuntimeError ){ place.remove_marking(4) }
 
 
@@ -77,9 +77,9 @@ class TestPetriNet < Test::Unit::TestCase
 
         #Add the transition
         id = @net.add_transition(transition)
-        assert @net.objects.length > 1
+        assert_equal 1, @net.objects_size
         assert_equal @net.transitions['Join'], id
-        assert_equal @net.objects[@net.transitions['Join']], transition 
+        assert_equal @net.get_transition('Join'), transition 
     end
 
     def test_add_object()
@@ -92,8 +92,8 @@ class TestPetriNet < Test::Unit::TestCase
         arc = PetriNet::Arc.new do |a|
             a.name = 'testarc'
             a.weight = 2
-            a.add_source(@net.objects[@net.places['testplace']])
-            a.add_destination(@net.objects[@net.transitions['testtrans']])
+            a.add_source(@net.get_place 'testplace')
+            a.add_destination(@net.get_transition 'testtrans')
         end
         @net << arc 
         assert_equal 1, @net.arcs.size, "Addes only one arc, this means there should only be one arc"
@@ -122,31 +122,31 @@ class TestPetriNet < Test::Unit::TestCase
         arc = PetriNet::Arc.new do |a|
             a.name = 'Hydrogen.Join'
             a.weight = 2
-            a.add_source(@net.objects[@net.places['Hydrogen']])
-            a.add_destination(@net.objects[@net.transitions['Join']])
+            a.add_source(@net.get_place 'Hydrogen')
+            a.add_destination(@net.get_transition 'Join')
         end
         assert_not_nil arc
         assert arc.validate(@net), "the created arc is not valid"
 
         #add the arc
         id = @net.add_arc arc
-        assert @net.objects.length > 1
+        assert @net.objects_size > 1
         assert_equal @net.arcs['Hydrogen.Join'], id
-        assert_equal @net.objects[@net.arcs['Hydrogen.Join']], arc
+        assert_equal @net.get_arc('Hydrogen.Join'), arc
 
         #should not be here :-(
-        transition = @net.objects[@net.transitions['Join']]
+        transition = @net.get_transition 'Join'
         assert !transition.activated?, "Transition should not be activated as there are no markings" 
 
         @net.add_object PetriNet::Place.new(:name => 'Oxygen')
         arc = PetriNet::Arc.new do |a|
             a.name = 'Join.Oxygen'
             a.weight = 1
-            a.add_source(@net.objects[@net.transitions['Join']])
-            a.add_destination(@net.objects[@net.places['Oxygen']])
+            a.add_source(@net.get_transition 'Join')
+            a.add_destination(@net.get_place 'Oxygen')
         end
         @net << arc
-        @net.objects[@net.places['Hydrogen']].add_marking(2)
+        @net.get_place('Hydrogen').add_marking(2)
         assert transition.activated?, "Transition should be activated now"
 
 #puts        @net.generate_reachability_graph.to_gv
@@ -175,8 +175,8 @@ class TestPetriNet < Test::Unit::TestCase
         arc = PetriNet::Arc.new do |a|
             a.name = 'testarc'
             a.weight = 2
-            a.add_source(net2.objects[net2.places['testplace2']])
-            a.add_destination(net2.objects[net2.transitions['testtrans']])
+            a.add_source(net2.get_place 'testplace2')
+            a.add_destination(net2.get_transition 'testtrans')
         end
         net2 << arc
         assert_equal "Petri Net [Water]
@@ -214,31 +214,47 @@ Edges
 ----------------------------
 
 ", @net.generate_reachability_graph(net).to_s, "Simple Reachability Graph with only one reachable state"
-        assert false, "needs more testing!"
     end
 
     def test_w0
-        assert false, "not implemented yet" 
+        fill_net
+        assert_equal 2, net.w0(1,2), "The weight of the arc between 1 aud 2 is 2"
+        assert_equal 0, net.w0(2,1), "The other direction should be 0 because arcs are directed"
+        assert_equal 0, net.w0(3,6), "If there is no arc, there should not be a weight, so 0"
     end
 
     def test_update
-        assert false, "not implemented yet" 
+        fill_net
+        assert !net.up_to_date, "At first the net should be not up to date"
+        net.update
+        assert net.up_to_date, "Afterwards the net should be up to date and all cached functions should be calculated"
     end
 
     def test_generate_weight_function
-        assert false, "not implemented yet" 
+        fill_net
+        weight = {[1,2] => 2}
+        assert_equal weight, net.generate_weight_function
     end
 
     def test_get_markings
-        assert false, "not implemented yet" 
+        fill_net
+        net << PetriNet::Place.new(name: 'place2')
+        net.get_place('testplace').add_marking 2
+        net.get_place('place2').add_marking 3
+
+        assert_equal [2,3], net.get_markings
     end
 
     def test_set_markings
-        assert false, "not implemented yet" 
+        fill_net
+        net << PetriNet::Place.new(name: 'place2')
+        net.set_markings [2,3]
+        assert_equal [2,3], net.get_markings
     end
 
     def test_objects_size
-        assert false, "not implemented yet" 
+        fill_net
+        assert_equal 3, net.objects_size
     end
 
 
