@@ -1,6 +1,4 @@
 #!/usr/bin/env ruby
-#
-#
 
 require 'rubygems'
 require 'logger'
@@ -30,7 +28,7 @@ class TestPetriNet < Test::Unit::TestCase
     end
 
     def teardown
-        @net = nil
+        @net.reset
     end
 
     def test_create_net
@@ -170,11 +168,53 @@ class TestPetriNet < Test::Unit::TestCase
 
 
     def test_merge
-        assert false, "not implemented yet" 
+        fill_net
+        net2 = PetriNet::Net.new(:name => 'Water2', :description => '    Creation of water from base elements version2.')
+        net2 << PetriNet::Place.new(:name => "testplace2")
+        net2 << PetriNet::Transition.new(:name => "testtrans")
+        arc = PetriNet::Arc.new do |a|
+            a.name = 'testarc'
+            a.weight = 2
+            a.add_source(net2.objects[net2.places['testplace2']])
+            a.add_destination(net2.objects[net2.transitions['testtrans']])
+        end
+        net2 << arc
+        assert_equal "Petri Net [Water]
+----------------------------
+Description: Creation of water from base elements.
+Filename: Water
+
+Places
+----------------------------
+1: testplace (0)
+4: testplace2 (0)
+
+Transitions
+----------------------------
+2: testtrans
+
+Arcs
+----------------------------
+3: testarc (2) 1 -> 2
+
+", @net.merge(net2).to_s, "Merge failed, this is only a basic test"
     end
 
     def test_generate_reachability_graph
-        assert false, "not implemented yet" 
+assert_equal "Reachability Graph [Water]
+----------------------------
+Description: 
+Filename: 
+
+Nodes
+----------------------------
+1: Node1 ([])
+
+Edges
+----------------------------
+
+", @net.generate_reachability_graph(net).to_s, "Simple Reachability Graph with only one reachable state"
+        assert false, "needs more testing!"
     end
 
     def test_w0

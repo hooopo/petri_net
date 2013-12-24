@@ -30,4 +30,8 @@ class PetriNet::ReachabilityGraph::Node < PetriNet::Base
         @markings == object.markings
     end
 
+    def to_s
+        "#{@id}: #{@name} (#{@markings})"
+    end
+
 end

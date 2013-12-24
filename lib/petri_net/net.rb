@@ -168,7 +168,7 @@ class PetriNet::Net < PetriNet::Base
     def generate_reachability_graph(unlimited = true)
         raise "Not implemented yet" unless unlimited
         startmarkings = get_markings
-        @graph = PetriNet::ReachabilityGraph.new
+        @graph = PetriNet::ReachabilityGraph.new(self)
         @graph.add_node current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
 
         reachability_helper startmarkings, current_node
@@ -176,19 +176,6 @@ class PetriNet::Net < PetriNet::Base
         set_markings startmarkings
         @graph 
     end
-
-    def reachability_helper(markings, source)
-        @transitions.each_value do |tid|
-            if @objects[tid].fire
-                current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
-                current_node_id = @graph.add_node current_node 
-                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node) unless current_node_id < 0
-                reachability_helper get_markings, current_node unless (current_node_id < 0)
-            end
-            set_markings markings
-        end
-    end
-
     def generate_weight_function
         @weight = Hash.new
         @arcs.each_value do |id|
@@ -243,5 +230,17 @@ class PetriNet::Net < PetriNet::Base
 
     def changed_state
         @up_to_date = false
+    end
+
+    def reachability_helper(markings, source)
+        @transitions.each_value do |tid|
+            if @objects[tid].fire
+                current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
+                current_node_id = @graph.add_node current_node 
+                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node) unless current_node_id < 0
+                reachability_helper get_markings, current_node unless (current_node_id < 0)
+            end
+            set_markings markings
+        end
     end
 end

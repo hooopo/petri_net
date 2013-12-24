@@ -24,5 +24,8 @@ class PetriNet::ReachabilityGraph::Edge < PetriNet::Base
         return false unless object.class.to_s == "PetriNet::ReachabilityGraph::Edge"
         (@source == object.yource && @destination == oject.destination)
     end
+    def to_s
+        "#{@id}: #{@name} #{@source.id} -> #{@destination} )"
+    end
 
 end

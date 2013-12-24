@@ -1,8 +1,9 @@
 class PetriNet::ReachabilityGraph < PetriNet::Base
-    def initialize
+    def initialize(net)
         @objects = Array.new
         @nodes = Hash.new
         @edges = Hash.new
+        @name = net.name
     end
 
     def add_node(node)
@@ -67,6 +68,26 @@ class PetriNet::ReachabilityGraph < PetriNet::Base
 
         return str
 
+    end
+
+    def to_s
+        str = "Reachability Graph [#{@name}]\n"
+        str += "----------------------------\n"
+        str += "Description: #{@description}\n"
+        str += "Filename: #{@filename}\n"
+        str += "\n"
+
+        str += "Nodes\n"
+        str += "----------------------------\n"
+        @nodes.each_value {|p| str += @objects[p].to_s + "\n" }
+        str += "\n"
+
+        str += "Edges\n"
+        str += "----------------------------\n"
+        @edges.each_value {|t| str += @objects[t].to_s + "\n" }
+        str += "\n"
+
+        return str
     end
 
 end

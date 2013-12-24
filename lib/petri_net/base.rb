@@ -17,5 +17,9 @@ module PetriNet
 		def next_object_id
 			@@object_count += 1
 		end
+
+                def reset
+                    @@object_count = 0
+                end
 	end 
 end
