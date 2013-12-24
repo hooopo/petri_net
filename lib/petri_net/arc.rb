@@ -23,6 +23,9 @@ module PetriNet
         # Add a source object to this arc.  Validation of the source object will be performed
         # before the object is added to the arc and an exception will be raised.
         def add_source(object)
+            if object.class.to_s == "String"
+                object = (net.get_place object or net.get_transition object)
+            end
             if validate_source_destination(object)
                 @source = object
                 object.add_output(self)
@@ -33,6 +36,9 @@ module PetriNet
 
         # Add a destination object
         def add_destination(object)
+            if object.class.to_s == "String"
+                object = (net.get_place object or net.get_transition object)
+            end
             if validate_source_destination(object)
                 @destination = object
                 object.add_input(self)

@@ -3,3 +3,6 @@
 
 2010-08-26  Brian D. Nelson <bdnelson@wildcoder.com>
 * Restart of project
+
+2013-13.12 Christian Clausen <cclausen@tzi.de>
+* Fork project to create a petrinet library to use for my Bachelor-Thesis

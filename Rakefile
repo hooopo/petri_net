@@ -9,7 +9,7 @@ task :default => [:test, :rdoc, :push, :clean]
 
 task(:test) { puts "==> Running main test suite" }
 Rake::TestTask.new(:test) do |t|
-	t.test_files = FileList['test/unit_test_*.rb']
+	t.test_files = FileList['test/tc_*.rb']
 	t.ruby_opts = ['-rubygems'] if defined? Gem
 end
 
@@ -26,13 +26,5 @@ end
 
 desc 'Run tests.'
 task :test do
-end
-
-desc 'Push out new documentation files.'
-task :push  do 
-	Net::SFTP.start('dev.wildcoder.com', 'bdnelson') do |sftp|
-		sftp.upload('doc/rdoc-style.css', '/work/www/dev.wildcoder.com/html/rdoc-style.css')
-		sftp.setstat!('/work/www/dev.wildcoder.com/html/rdoc-style.css', :permissions => 0644)
-	end
 end
 

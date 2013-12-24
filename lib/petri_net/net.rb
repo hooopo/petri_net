@@ -85,15 +85,18 @@ class PetriNet::Net < PetriNet::Base
     end
 
     def get_place(name)
-        @objects[@places[name]]
+        place = @objects[@places[name]]
+        place.nil? ? false : place
     end
 
     def get_transition(name)
-        @objects[@transitions[name]]
+        trans = @objects[@transitions[name]]
+        trans.nil? ? false : trans
     end
 
     def get_arc(name)
-        @objects[@arcs[name]]
+        arc = @objects[@arcs[name]]
+        arc.nil? ? false : arc
     end
 
     # A Petri Net is said to be pure if it has no self-loops.  

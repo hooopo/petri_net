@@ -2,12 +2,92 @@
 ===== based on the code by Brian D Nelson <bdnelson@wildcoder.com>
 ===== Christian Clausen cclausen@tzi.de
 
+== Version 0.5
+I implemented most of the basics you need for playing with PetriNets but there are a lot things to add.
+Next big step will be a stochastic analysis of the PetriNet.
+
 == Overview
 This package provides a ruby based simulation package for Petri nets.
+You can build PetriNets, fire transitions and calculate statistica or solve problems in the net.
+It also provides a visualization of the net (and even the Reachability Graph of the given net)
 
 
 == Petri Net Resources
 * http://en.wikipedia.org/wiki/Petri_net - Wikipedia
 
 == Usage
-Will be added soon I hope, for a first idea take a look at test/create.rb
+=== Creation
+At first you need to create a blank petrinet:
+    net = PetriNet::Net.new
+Then you can add places and transitions:
+    net << PetriNet::Place.new
+    net << PetriNet::Transition.new
+It's a good idea to name the places and transitions, as you need to refer to them to add, so the better way will be:
+    net << PetriNet::Place.new(name: "A")
+    net << PetriNet::Transition.new(name: "a")
+    net << PetriNet::Arc.new(source: "A", destination: "a")
+As you see, an arc needs to get a source and a destination. You can, but you don't need to name your arcs, as you don't need to refer to them later in most cases.
+You can get a place/transition/arc by
+    net.get_place( name )
+    net.get_transition( name )
+    net.get_arc( name )
+Or if you know the id (but not the name) you can use
+    net.get_object(id)
+Of course you can save the Objects while creating them and add them afterwards:
+    place_B = PetriNet::Place.new(name: "B")
+    net << place_B
+or
+    net.add_object place_B
+or
+    net.add_place place_B
+if you want to use this.
+PetriNet#add_object even accepts arrays of accepted objects
+
+To create an arc you do not need to specify source and destination, you can add them with "add_source" and "add_destination" later on, but an arc has to have both before being added to a net.
+
+=== Markings
+ !!! Attention, I'm not sure how I will implement markings in the end, this part might be wrong because I changed something. I'm not happy with the way I handle markings/token currently. Currently are PetriNet::Base-Objects which makes no sence in my opinion.
+
+ !!! Attention, Markings are inconsistens at the moment. In the original code markings are what I call "token" or "tokken" and a marking is the "state" of a petrinet, which means how many token are in which places. It's hard to understand which markings are meant as currently everything is called "marking" I will refactor this some time.
+
+You can create markings like other PetriNet::Base objects with
+    marking = PetriNet::Marking.new
+And add them to a place with
+    place_B.add_marking(marking)
+
+But since I see no sence in creating the specific markings you can do
+    place_B.add_marking(3)
+to add three markings to a place. Without any argument it will add just one marking.
+
+You can get the current marking with net.get_markings. This will give you an Array of state-markings. [1,3,2,4] would mean, the first place (in order of id's, but be careful, every PetriNet::Base-object has a unique id) will hold one marking (or token) the second place will hold 3 and so on.
+You can even set the markings with
+    net.set_markings([1,3,2,4]
+but be carefull with this one, maybe this should be private in future but it can be very usefull to save the initial state or to set the net to a specific state for some algorithms (e.g. for generating the Reachability Graph)
+
+=== Visualization
+You can just print yout PetriNet with
+    net.to_s
+as you should know this means you can write
+    puts net
+
+For a more fancy way to show off with your PetriNet you should try
+    net.to_gv
+which generates the GraphViz-Code for the PetriNet.
+It is planned to use the GraphViz-gem in the future to create png and stuff like that directly.
+
+=== Reachability Graph
+The Reachablility Graph is a Graph with nodes representing reachable markings of the net in the current state and edges reresenting the transitions you need to get from one node to another.
+You can generate the reachablility Graph with
+    net.generate_reachability_graph
+As a PetriNet itself you can to_s and to_gv the reachablility Graph too.
+
+=== More documentation will come soon
+
+== Contributing
+Neither the library nor the documentation is finished by now, so please feel free to contribute
+
+Just write an email and/or fork this project. Active contributors will get write-access to this repository too.
+
+
+== Gem
+This library is available on rubygems.org soon
