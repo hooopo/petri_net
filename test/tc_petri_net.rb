@@ -5,7 +5,7 @@ require 'logger'
 require 'test/unit'
 require "#{File.dirname(__FILE__)}/../lib/petri_net" 
 
-require 'pry'
+#require 'pry'
 
 class TestPetriNet < Test::Unit::TestCase
     def setup
