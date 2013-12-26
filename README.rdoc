@@ -1,4 +1,4 @@
-{<img src="https://travis-ci.org/cclausen/petri.png" />}[https://travis-ci.org/cclausen/petri
+{<img src="https://travis-ci.org/cclausen/petri.png" />}https://travis-ci.org/cclausen/petri
 
 {<img src="https://codeclimate.com/github/cclausen/petri.png" />}[https://codeclimate.com/github/cclausen/petri]
 
