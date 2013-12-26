@@ -20,6 +20,9 @@
 # THE SOFTWARE.
 #++
 
+# This library provides a way to represent petri nets in ruby and do some algorithms on them as generating the Reachability Graph. 
+
+# Holds the path of the base-file petri_net.rb
 PETRI_LIB_FILE_PATH = File.dirname(__FILE__)
 require "#{PETRI_LIB_FILE_PATH}/petri_net/base"
 require "#{PETRI_LIB_FILE_PATH}/petri_net/net"

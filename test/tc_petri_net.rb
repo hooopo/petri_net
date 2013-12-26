@@ -3,13 +3,11 @@
 require 'rubygems'
 require 'logger'
 require 'test/unit'
-require "#{`pwd`.strip}/../lib/petri_net" 
+require "#{File.dirname(__FILE__)}/../lib/petri_net" 
 
 require 'pry'
 
 class TestPetriNet < Test::Unit::TestCase
-    attr_accessor :net
-
     def setup
         @net = PetriNet::Net.new(:name => 'Water', :description => 'Creation of water from base elements.')	
         @net.logger = Logger.new(STDOUT)
@@ -86,7 +84,7 @@ class TestPetriNet < Test::Unit::TestCase
         assert_equal @net, @net << PetriNet::Place.new(:name => "testplace")
         assert_equal 1, @net.places.size, "Added only one place, this means there should only be one place"
         assert_equal 1, @net.objects_size, "Added only one place, this means there should only be one object"
-        net << PetriNet::Transition.new(:name => "testtrans")
+        @net << PetriNet::Transition.new(:name => "testtrans")
         assert_equal 1, @net.transitions.size, "Added only one transition, this means there should only be one transition"
         assert_equal 2, @net.objects_size, "Added one transition to the place, this means there should be exactly two objects"
         arc = PetriNet::Arc.new do |a|
@@ -213,48 +211,48 @@ Nodes
 Edges
 ----------------------------
 
-", @net.generate_reachability_graph(net).to_s, "Simple Reachability Graph with only one reachable state"
+", @net.generate_reachability_graph().to_s, "Simple Reachability Graph with only one reachable state"
     end
 
     def test_w0
         fill_net
-        assert_equal 2, net.w0(1,2), "The weight of the arc between 1 aud 2 is 2"
-        assert_equal 0, net.w0(2,1), "The other direction should be 0 because arcs are directed"
-        assert_equal 0, net.w0(3,6), "If there is no arc, there should not be a weight, so 0"
+        assert_equal 2, @net.w0(1,2), "The weight of the arc between 1 aud 2 is 2"
+        assert_equal 0, @net.w0(2,1), "The other direction should be 0 because arcs are directed"
+        assert_equal 0, @net.w0(3,6), "If there is no arc, there should not be a weight, so 0"
     end
 
     def test_update
         fill_net
-        assert !net.up_to_date, "At first the net should be not up to date"
-        net.update
-        assert net.up_to_date, "Afterwards the net should be up to date and all cached functions should be calculated"
+        assert !@net.up_to_date, "At first the net should be not up to date"
+        @net.update
+        assert @net.up_to_date, "Afterwards the net should be up to date and all cached functions should be calculated"
     end
 
     def test_generate_weight_function
         fill_net
         weight = {[1,2] => 2}
-        assert_equal weight, net.generate_weight_function
+        assert_equal weight, @net.generate_weight_function
     end
 
     def test_get_markings
         fill_net
-        net << PetriNet::Place.new(name: 'place2')
-        net.get_place('testplace').add_marking 2
-        net.get_place('place2').add_marking 3
+        @net << PetriNet::Place.new(name: 'place2')
+        @net.get_place('testplace').add_marking 2
+        @net.get_place('place2').add_marking 3
 
-        assert_equal [2,3], net.get_markings
+        assert_equal [2,3], @net.get_markings
     end
 
     def test_set_markings
         fill_net
-        net << PetriNet::Place.new(name: 'place2')
-        net.set_markings [2,3]
-        assert_equal [2,3], net.get_markings
+        @net << PetriNet::Place.new(name: 'place2')
+        @net.set_markings [2,3]
+        assert_equal [2,3], @net.get_markings
     end
 
     def test_objects_size
         fill_net
-        assert_equal 3, net.objects_size
+        assert_equal 3, @net.objects_size
     end
 
 

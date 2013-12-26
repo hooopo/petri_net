@@ -1,6 +1,12 @@
 class PetriNet::ReachabilityGraph::Edge < PetriNet::Base
-    attr_reader :name, :id
+    # Human readable name
+    attr_reader :name
+    # Unique ID
+    attr_reader :id
+    # Graph this edge belongs to
     attr_accessor :graph
+    
+    # Creates an edge for PetriNet::ReachabilityGraph
     def initialize(options = {}, &block)
         @id = next_object_id
         @name = (options[:name] or "Edge#{@id}")
@@ -12,6 +18,7 @@ class PetriNet::ReachabilityGraph::Edge < PetriNet::Base
         yield self unless block.nil?
     end
 
+    # Validates the data holded by this edge, this will be used while adding the edge to the graph
     def validate
         true
     end

@@ -1,12 +1,20 @@
 class PetriNet::Place < PetriNet::Base
-    attr_accessor :id            # Unique ID
-    attr_accessor :name          # Human readable name	
-    attr_accessor :description   # Description
-    attr_accessor :capacity      # Token capacity
-    attr_reader   :inputs        # Input arcs
-    attr_reader   :outputs       # Output arcs
-    attr_reader :markings      # Current Token/Markings
-    attr_writer   :net           # The net this place belongs to
+    # Unique ID
+    attr_reader :id
+    # Human readable name
+    attr_accessor :name
+    # description
+    attr_accessor :description
+    #Token capacity
+    attr_accessor :capacity
+    # List of input-arcs
+    attr_reader   :inputs
+    # List of output-arcs
+    attr_reader   :outputs
+    # Current token
+    attr_reader :markings
+    # The net this place belongs to
+    attr_writer   :net
 
     # Initialize a new place.  Supports block configuration.
     def initialize(options = {}, &block)

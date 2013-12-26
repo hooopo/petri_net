@@ -1,14 +1,23 @@
 module PetriNet
     # Arc
     class Arc < PetriNet::Base
-        attr_reader   :id            # Unique ID
-        attr_accessor :name          # Human readable name	
-        attr_accessor :description   # Description
-        attr_accessor :weight        # Arc weight
-        attr_reader   :source        # Source object
-        attr_reader   :destination   # Destination object
-        attr_writer   :net           # The net this arc belongs to
+        # Unique ID
+        attr_reader   :id
+        # human readable name
+        attr_accessor :name
+        # Description
+        attr_accessor :description
+        # Arc weight
+        attr_accessor :weight
+        # Source-object
+        attr_reader   :source
+        # Source-object
+        attr_reader   :destination
+        # The net this arc belongs to
+        attr_writer   :net
 
+        # Creates an arc. 
+        # An arc is an directed edge between a place and a transition (or visa versa) and can have a weight which indicates how many token it comsumes or produces from/to the place
         def initialize(options = {}, &block)
             @id = next_object_id
             @name = (options[:name] or "Arc#{@id}")
@@ -84,10 +93,13 @@ module PetriNet
             "#{@id}: #{@name} (#{@weight}) #{@source.id} -> #{@destination.id}"
         end
 
+        # Gives the GraphViz-representation of this arc as string of a GV-Edge
         def to_gv
             "\t#{@source.gv_id} -> #{@destination.gv_id} [ label = \"#{@name}\", headlabel = \"#{@weight}\" ];\n"
         end
 
+        # Checks if the information in this arc are still correct.
+        # The information can get wrong if you merge two nets together.
         def need_update? net
             if net.get_object(@source.id).nil? || (@source.name != net.get_object(@source.id).name)
                 return true
@@ -97,6 +109,9 @@ module PetriNet
             end
         end
 
+        # Updates the information in this arc
+        # Should only be necessary if PetriNet::Arc#need_update? is true
+        # affects source and destination
         def update net
             @source.id = net.objects_find_index @source
             @destination.id = net.objects_find_index @destination

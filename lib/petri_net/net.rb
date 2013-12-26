@@ -1,16 +1,32 @@
 class PetriNet::Net < PetriNet::Base
-    attr_accessor :name          # Human readable name	
-    attr_accessor :filename      # Storage filename
-    attr_accessor :description   # Description
-    attr_reader   :places        # List of places
-    attr_reader   :arcs          # List of arcs
-    attr_reader   :transitions   # List of transitions
-    attr_reader   :markings      # List of markings
+    # Human readable name
+    attr_accessor :name
+    # Storage filename
+    attr_accessor :filename
+    # Description
+    attr_accessor :description
+    # List of places
+    attr_reader   :places
+    # List of arcs
+    attr_reader   :arcs
+    # List of transitions
+    attr_reader   :transitions
+    # List of markings
+    # !depricated!
+    attr_reader   :markings
+
 # should not be public available    attr_reader   :objects       # Array of all objects in net
 #    attr_reader   :up_to_date    # is true if, and only if, the cached elements are calculated AND the net hasn't changed
 
 
-    # Create new Petri Net definition.	
+    # Create new Petri Net definition.
+    #
+    # options may be 
+    # * name    used as a human usable identifier (defaults to 'petri_net')
+    # * filename (defaults to the name)
+    # * description (defaults to 'Petri Net')
+    #
+    # Accepts a block and yields itself
     def initialize(options = {}, &block)
         @name = (options[:name] or 'petri_net')
         @filename = (options[:filename] or @name)
@@ -26,7 +42,17 @@ class PetriNet::Net < PetriNet::Base
         yield self unless block == nil
     end	
 
-    # Add an object to the Petri Net.
+    # Adds an object to the Petri Net.
+    # You can add
+    # * PetriNet::Place
+    # * PetriNet::Arc
+    # * PetriNet::Transition
+    # * Array of these
+    #
+    # The Objects are added by PetriNet::Net#add_place, PetriNet::Net#add_arc and PetriNet::Net#add_transition, refer to these to get more information on how they are added
+    # raises an RuntimeError if a wring Type is given
+    #
+    # returns itself
     def <<(object)
         return if object.nil?  #TODO WORKAROUND There should never be a nil here, even while merging.
         case object.class.to_s
@@ -45,7 +71,10 @@ class PetriNet::Net < PetriNet::Base
     end
     alias_method :add_object, :<<
 
-    # Add a place to the list of places.
+    # Adds a place to the list of places.
+    # Adds the place only if the place is valid and unique in the objects-list of the net
+    #
+    # This Method changes the structure of the PetriNet, you will have to recalculate all cached functions
     def add_place(place)
         if place.validate && !@places.include?(place.name) 
             @places[place.name] = place.id
@@ -58,6 +87,8 @@ class PetriNet::Net < PetriNet::Base
     end
 
     # Add an arc to the list of arcs.
+    #
+    # see PetriNet::Net#add_place
     def add_arc(arc)
         if (arc.validate self) && !@arcs.include?(arc.name)
             if arc.need_update? self
@@ -73,6 +104,8 @@ class PetriNet::Net < PetriNet::Base
     end
 
     # Add a transition to the list of transitions.
+    #
+    # see PetriNet::Net#add_place
     def add_transition(transition)
         if transition.validate && !@transitions.include?(transition.name)
             @transitions[transition.name] = transition.id
@@ -84,29 +117,35 @@ class PetriNet::Net < PetriNet::Base
         return false
     end
 
+    # Returns the place refered by the given name
+    # or false if there is no place with this name
     def get_place(name)
         place = @objects[@places[name]]
         place.nil? ? false : place
     end
 
+    # Returns the transition refered by the given name
+    # or false if there is no transition with this name
     def get_transition(name)
         trans = @objects[@transitions[name]]
         trans.nil? ? false : trans
     end
 
+    # returns the arc refered by the given name
+    # or false if there is no arc with this name
     def get_arc(name)
         arc = @objects[@arcs[name]]
         arc.nil? ? false : arc
     end
 
-    # A Petri Net is said to be pure if it has no self-loops.  
     # Is this Petri Net pure?
+    # A Petri Net is said to be pure if it has no self-loops.  
     def pure?
         raise "Not implemented yet"
     end
 
-    # A Petri Net is said to be ordinary if all of its arc weights are 1's.
     # Is this Petri Net ordinary?
+    # A Petri Net is said to be ordinary if all of its arc weights are 1's.
     def ordinary?
         raise "Not implemented yet"
     end
@@ -137,7 +176,7 @@ class PetriNet::Net < PetriNet::Base
         return str
     end
 
-    # Generate GraphViz dot file.
+    # Generate GraphViz dot string.
     def to_gv
         # General graph options
         str = "digraph #{@name} {\n"
@@ -165,6 +204,10 @@ class PetriNet::Net < PetriNet::Base
         return str
     end
 
+    # Merges two PetriNets
+    # Places, transitions and arcs are equal if they have the same name and description, arcs need to have the same source and destination too). With this definition of equality the resultung net will have unique ojects.
+    # ATTENTION conflicting capabilities and weights will be lost and the properies of the net you merge to will be used in future
+    # #TODO add a parameter to affect this!
     def merge(net)
         return self if self.equal? net
         return false if net.class.to_s != "PetriNet::Net"
@@ -209,6 +252,7 @@ class PetriNet::Net < PetriNet::Base
             @up_to_date = true
             return @up_to_date
         end
+        false
     end
     alias_method :up_to_date, :update?
 

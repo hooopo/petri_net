@@ -18,6 +18,9 @@ module PetriNet
 			@@object_count += 1
 		end
 
+                # Resets the object-count
+                # This should not be used without extreme care
+                # It's made for testing-purposes only
                 def reset
                     @@object_count = 0
                 end

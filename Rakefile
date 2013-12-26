@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'rake/testtask'
-require 'hanna/rdoctask'
+#require 'hanna/rdoctask'
 require 'net/sftp'
 require 'fileutils'
 
@@ -13,12 +13,12 @@ Rake::TestTask.new(:test) do |t|
 	t.ruby_opts = ['-rubygems'] if defined? Gem
 end
 
-Rake::RDocTask.new(:rdoc) do |rdoc|
-	rdoc.rdoc_files.include('LICENSE', 'CHANGELOG', 'README', 'lib/')
-	rdoc.title = "PetriNet Documentation"
-	rdoc.options << '--webcvs=http://svn.wildcoder.com/svn/petri/trunk/'
-	rdoc.rdoc_dir = 'doc' # rdoc output folder
-end
+#Rake::RDocTask.new(:rdoc) do |rdoc|
+#	rdoc.rdoc_files.include('LICENSE', 'CHANGELOG', 'README', 'lib/')
+#	rdoc.title = "PetriNet Documentation"
+#	rdoc.options << '--webcvs=http://svn.wildcoder.com/svn/petri/trunk/'
+#	rdoc.rdoc_dir = 'doc' # rdoc output folder
+#end
 
 desc 'Clean up unused files.'
 task :clean => :clobber_rdoc do

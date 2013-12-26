@@ -1,12 +1,18 @@
 module PetriNet
     # Transition
     class Transition < PetriNet::Base
-        attr_accessor :id            # Unique ID
-        attr_accessor :name          # Human readable name	
-        attr_accessor :description   # Description
-        attr_reader   :inputs        # Input arcs
-        attr_reader   :outputs       # Output arcs
-        attr_writer   :net           # The net this transition belongs to
+        # Unique ID
+        attr_accessor :id
+        # Huan readable name
+        attr_accessor :name
+        # Description
+        attr_accessor :description
+        # List of input-arcs
+        attr_reader   :inputs
+        # List of output-arcs
+        attr_reader   :outputs
+        # The net this transition belongs to
+        attr_writer   :net
 
         # Create a new transition.
         def initialize(options = {}, &block)

@@ -1,6 +1,13 @@
 class PetriNet::ReachabilityGraph::Node < PetriNet::Base
-    attr_reader :name, :id, :markings
+    # human readable name
+    attr_reader :name
+    # unique ID
+    attr_reader :id 
+    # Makking this node represents
+    attr_reader :markings
+    # The graph this node belongs to
     attr_accessor :graph
+
     def initialize(options = {}, &block)
         @id = next_object_id
         @name = (options[:name] or "Node#{@id}")
