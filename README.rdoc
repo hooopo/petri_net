@@ -6,7 +6,7 @@
 ===== based on the code by Brian D Nelson <bdnelson@wildcoder.com>
 ===== Christian Clausen cclausen@tzi.de
 
-== Version 0.5
+== Version 0.6
 I implemented most of the basics you need for playing with PetriNets but there are a lot things to add.
 Next big step will be a stochastic analysis of the PetriNet.
 
