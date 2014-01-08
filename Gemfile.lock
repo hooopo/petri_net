@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    petri_net (0.2.0)
+    petri_net (0.6.0)
 
 GEM
   remote: https://rubygems.org/
