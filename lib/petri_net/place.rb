@@ -1,6 +1,8 @@
 class PetriNet::Place < PetriNet::Base
     # Unique ID
     attr_reader :id
+    # Needed to sanitize a Petrinet after merging
+    attr_writer :id
     # Human readable name
     attr_accessor :name
     # description

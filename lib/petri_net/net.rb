@@ -305,7 +305,7 @@ class PetriNet::Net < PetriNet::Base
             if @objects[tid].fire
                 current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
                 current_node_id = @graph.add_node current_node 
-                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node) unless current_node_id < 0
+                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node, probability: @objects[tid].probability) unless current_node_id < 0
                 reachability_helper get_markings, current_node unless (current_node_id < 0)
             end
             set_markings markings

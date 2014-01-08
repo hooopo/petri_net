@@ -7,6 +7,8 @@ module PetriNet
         attr_accessor :name
         # Description
         attr_accessor :description
+        # Probability of firing (this moment)
+        attr_accessor :probability
         # List of input-arcs
         attr_reader   :inputs
         # List of output-arcs
@@ -21,6 +23,7 @@ module PetriNet
             @description = (options[:description] or "Transition #{@id}")
             @inputs = Array.new
             @outputs = Array.new
+            @probability = options[:probability]
 
             yield self unless block == nil
         end	
@@ -54,7 +57,7 @@ module PetriNet
 
         # GraphViz definition
         def to_gv
-            "\t#{self.gv_id} [ label = \"#{@name}\" ];\n"
+            "\t#{self.gv_id} [ label = \"#{@name}#{@probability ? ' ' + @probability.to_s : ''}\" ];\n"
         end
 
         def ==(object)
