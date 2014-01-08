@@ -1,5 +1,5 @@
 module PetriNet
-    VERSION = "0.666666.0"
+    VERSION = "0.6.0"
     DEBUG = false
 end
 
