@@ -152,27 +152,22 @@ class PetriNet::Net < PetriNet::Base
 
     # Stringify this Petri Net.
     def to_s
-        str = "Petri Net [#{@name}]\n"
-        str += "----------------------------\n"
-        str += "Description: #{@description}\n"
-        str += "Filename: #{@filename}\n"
-        str += "\n"
+        str = 
+%{Petri Net [#{@name}]
+----------------------------
+Description: #{@description}
+Filename: #{@filename}
 
-        str += "Places\n"
-        str += "----------------------------\n"
-        @places.each_value {|p| str += @objects[p].to_s + "\n" }
-        str += "\n"
-
-        str += "Transitions\n"
-        str += "----------------------------\n"
-        @transitions.each_value {|t| str += @objects[t].to_s + "\n" }
-        str += "\n"
-
-        str += "Arcs\n"
-        str += "----------------------------\n"
-        @arcs.each_value {|a| str += @objects[a].to_s + "\n"}
-        str += "\n"
-
+Places
+----------------------------
+#{str = ''; @places.each_value {|p| str += @objects[p].to_s + "\n"}; str }
+Transitions
+----------------------------
+#{str = ''; @transitions.each_value {|t| str += @objects[t].to_s + "\n" }; str }
+Arcs
+----------------------------
+#{str = ''; @arcs.each_value {|a| str += @objects[a].to_s + "\n" }; str}
+}
         return str
     end
 
