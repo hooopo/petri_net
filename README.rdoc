@@ -4,7 +4,7 @@
 
 = PTNet: Petri-net Simulation in Ruby
 ===== based on the code by Brian D Nelson <bdnelson@wildcoder.com>
-===== Christian Clausen cclausen@tzi.de
+===== Christian Clausen <cclausen@tzi.de>
 
 == Version 0.6
 I implemented most of the basics you need for playing with PetriNets but there are a lot things to add.

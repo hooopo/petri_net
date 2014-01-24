@@ -1,8 +1,4 @@
-require_relative 'reachability_graph/graph'
-require_relative 'reachability_graph/node'
-require_relative 'reachability_graph/edge'
 class PetriNet::ReachabilityGraph < PetriNet::Base
-=begin 
     def initialize(net)
         @objects = Array.new
         @nodes = Hash.new
@@ -93,5 +89,5 @@ class PetriNet::ReachabilityGraph < PetriNet::Base
 
         return str
     end
-=end
+
 end
