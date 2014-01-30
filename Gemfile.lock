@@ -1,21 +1,14 @@
 PATH
   remote: .
   specs:
-    petri_net (0.6.1)
+    petri_net (0.7.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    coderay (1.1.0)
-    method_source (0.8.2)
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (2.7.0)
-    pry (0.9.12.4)
-      coderay (~> 1.0)
-      method_source (~> 0.8)
-      slop (~> 3.4)
-    slop (3.4.7)
 
 PLATFORMS
   ruby
@@ -23,4 +16,3 @@ PLATFORMS
 DEPENDENCIES
   net-sftp
   petri_net!
-  pry
