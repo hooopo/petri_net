@@ -15,11 +15,14 @@ class PetriNet::ReachabilityGraph < PetriNet::Base
     end
 
     def add_node(node)
+        double = false
         @nodes.each_value do |n|
             begin
                 if node > @objects[n]
                     if @unlimited
-                        return @objects[n].id *-1
+                        double = n
+                        break
+                        #return @objects[n].id *-1
                     else
                         raise PetriNet::ReachabilityGraph::InfiniteReachabilityGraphError
                     end
@@ -28,6 +31,7 @@ class PetriNet::ReachabilityGraph < PetriNet::Base
                 #just two different markings, completly ok
             end
         end
+        return (@objects[double].id * -1) if double
         node_index = @objects.index node
         if (!node_index.nil?)
             return @objects[node_index].id * -1

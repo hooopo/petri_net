@@ -294,6 +294,10 @@ Arcs
         @net = YAML.load(File.read(filename))
     end
 
+    def fire transition
+        get_transition(transition).fire
+    end
+
     private
 
     def changed_structure
@@ -312,7 +316,7 @@ Arcs
                 current_node_id = @graph.add_node current_node 
                 @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node, probability: @objects[tid].probability) unless current_node_id < 0
                 if current_node_id < 0 && @graph.get_node(current_node_id * -1) < current_node
-                    @graph.getNode(current_node_id * -1).add_omega current_node
+                    @graph.get_node(current_node_id * -1).add_omega current_node
                 end
                 reachability_helper get_markings, current_node unless (current_node_id < 0)
             end

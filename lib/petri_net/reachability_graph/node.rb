@@ -41,11 +41,11 @@ class PetriNet::ReachabilityGraph::Node < PetriNet::Base
     # Add an omega-marking to a specified place
     def add_omega object 
         if object.class.to_s == "PetriNet::ReachabilityGraph::Node"
-            if self > object
+            if self < object
                 counter = 0
                 object.markings.each do |marking|
                     if @markings[counter] < marking 
-                        @markings[counter] = Fload::INFINITY 
+                        @markings[counter] = Float::INFINITY 
                     end
                     counter += 1
                 end

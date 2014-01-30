@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 require 'rubygems'
 require 'logger'
 require 'test/unit'
@@ -24,6 +22,62 @@ class TestPetriNet < Test::Unit::TestCase
         @net << arc 
     end
 
+    def complex_net
+        @net << PetriNet::Place.new(:name => "P1")
+        @net << PetriNet::Place.new(:name => "P2")
+        @net << PetriNet::Place.new(:name => "C1")
+        @net << PetriNet::Place.new(:name => "C2")
+        @net << PetriNet::Place.new(:name => "buffer")
+        @net << PetriNet::Transition.new(:name => "produce")
+        @net << PetriNet::Transition.new(:name => "consume")
+        @net << PetriNet::Transition.new(:name => "put")
+        @net << PetriNet::Transition.new(:name => "take")
+        @net <<  PetriNet::Arc.new do |a|
+            a.add_source(@net.get_place 'P1')
+            a.add_destination(@net.get_transition 'produce')
+        end
+        @net <<  PetriNet::Arc.new do |a|
+            a.add_source(@net.get_transition 'produce')
+            a.add_destination(@net.get_place 'P2')
+        end
+        @net <<  PetriNet::Arc.new do |a|
+            a.add_source(@net.get_place 'P2')
+            a.add_destination(@net.get_transition 'put')
+        end
+        @net <<  PetriNet::Arc.new do |a|
+            a.add_source(@net.get_transition 'put')
+            a.add_destination(@net.get_place 'P1')
+        end
+        @net <<  PetriNet::Arc.new do |a|
+            a.add_source(@net.get_transition 'put')
+            a.add_destination(@net.get_place 'buffer')
+        end
+        @net <<  PetriNet::Arc.new do |a|
+            a.add_source(@net.get_place 'buffer')
+            a.add_destination(@net.get_transition 'take')
+        end
+        @net <<  PetriNet::Arc.new do |a|
+            a.add_source(@net.get_transition 'take')
+            a.add_destination(@net.get_place 'C1')
+        end
+        @net <<  PetriNet::Arc.new do |a|
+            a.add_source(@net.get_place 'C1')
+            a.add_destination(@net.get_transition 'consume')
+        end
+        @net <<  PetriNet::Arc.new do |a|
+            a.add_source(@net.get_transition 'consume')
+            a.add_destination(@net.get_place 'C2')
+        end
+        @net <<  PetriNet::Arc.new do |a|
+            a.add_source(@net.get_place 'C2')
+            a.add_destination(@net.get_transition 'take')
+        end
+
+        @net.get_place('P1').add_marking
+        @net.get_place('buffer').add_marking
+        @net.get_place('C2').add_marking
+    end
+
     def teardown
         @net.reset
     end
@@ -41,6 +95,13 @@ class TestPetriNet < Test::Unit::TestCase
         net.update
         assert net.up_to_date, "Now we calculated all cached functions without changing anything afterwards, so this schould be up to date"
         assert_empty net.get_markings, "No Places should mean no markings..."
+    end
+
+    def test_complex_net
+        complex_net
+        assert_equal "Petri Net [Water]\n----------------------------\nDescription: Creation of water from base elements.\nFilename: Water\n\nPlaces\n----------------------------\n1: P1 (0) *\n2: P2 (0) \n3: C1 (0) \n4: C2 (0) *\n5: buffer (0) *\n\nTransitions\n----------------------------\n6: produce\n7: consume\n8: put\n9: take\n\nArcs\n----------------------------\n10: Arc10 (1) 1 -> 6\n11: Arc11 (1) 6 -> 2\n12: Arc12 (1) 2 -> 8\n13: Arc13 (1) 8 -> 1\n14: Arc14 (1) 8 -> 5\n15: Arc15 (1) 5 -> 9\n16: Arc16 (1) 9 -> 3\n17: Arc17 (1) 3 -> 7\n18: Arc18 (1) 7 -> 4\n19: Arc19 (1) 4 -> 9\n\n", @net.to_s
+        assert_equal "digraph Water {\n\t// General graph options\n\trankdir = LR;\n\tsize = \"10.5,7.5\";\n\tnode [ style = filled, fillcolor = white, fontsize = 8.0 ]\n\tedge [ arrowhead = vee, arrowsize = 0.5, fontsize = 8.0 ]\n\n\t// Places\n\tnode [ shape = circle ];\n\tP1 [ label = \"P1 1  \" ];\n\tP2 [ label = \"P2 0  \" ];\n\tP3 [ label = \"C1 0  \" ];\n\tP4 [ label = \"C2 1  \" ];\n\tP5 [ label = \"buffer 1  \" ];\n\n\t// Transitions\n\tnode [ shape = box, fillcolor = grey90 ];\n\tT6 [ label = \"produce\" ];\n\tT7 [ label = \"consume\" ];\n\tT8 [ label = \"put\" ];\n\tT9 [ label = \"take\" ];\n\n\t// Arcs\n\tP1 -> T6 [ label = \"Arc10\", headlabel = \"1\" ];\n\tT6 -> P2 [ label = \"Arc11\", headlabel = \"1\" ];\n\tP2 -> T8 [ label = \"Arc12\", headlabel = \"1\" ];\n\tT8 -> P1 [ label = \"Arc13\", headlabel = \"1\" ];\n\tT8 -> P5 [ label = \"Arc14\", headlabel = \"1\" ];\n\tP5 -> T9 [ label = \"Arc15\", headlabel = \"1\" ];\n\tT9 -> P3 [ label = \"Arc16\", headlabel = \"1\" ];\n\tP3 -> T7 [ label = \"Arc17\", headlabel = \"1\" ];\n\tT7 -> P4 [ label = \"Arc18\", headlabel = \"1\" ];\n\tP4 -> T9 [ label = \"Arc19\", headlabel = \"1\" ];\n}\n", @net.to_gv 
+        assert_equal "digraph Water {\n\t// General graph options\n\trankdir = LR;\n\tsize = \"10.5,7.5\";\n\tnode [ style = filled, fillcolor = white, fontsize = 8.0 ]\n\tedge [ arrowhead = vee, arrowsize = 0.5, fontsize = 8.0 ]\n\n\t// Nodes\n\tnode [ shape = circle ];\n\tN20 [ label = \"[1, 0, 0, 1, Infinity]\" ];\n\tN21 [ label = \"[0, 1, 0, 1, 1]\" ];\n\tN24 [ label = \"[0, 1, 1, 0, 0]\" ];\n\tN26 [ label = \"[0, 1, 0, 1, Infinity]\" ];\n\tN28 [ label = \"[1, 0, 0, 1, 1]\" ];\n\tN31 [ label = \"[1, 0, 1, 0, Infinity]\" ];\n\tN34 [ label = \"[1, 0, 0, 1, Infinity]\" ];\n\tN36 [ label = \"[0, 1, 0, 1, 0]\" ];\n\tN40 [ label = \"[1, 0, 1, 0, 0]\" ];\n\tN43 [ label = \"[1, 0, 0, 1, 0]\" ];\n\n\t// Edges\n\tN20 -> N21;\n\tN21 -> N24;\n\tN24 -> N26;\n\tN26 -> N28;\n\tN28 -> N31;\n\tN31 -> N34;\n\tN34 -> N36;\n\tN20 -> N40;\n\tN40 -> N43;\n}\n", @net.generate_reachability_graph.to_gv
     end
 
     def test_add_place
@@ -176,25 +237,7 @@ class TestPetriNet < Test::Unit::TestCase
             a.add_destination(net2.get_transition 'testtrans')
         end
         net2 << arc
-        assert_equal "Petri Net [Water]
-----------------------------
-Description: Creation of water from base elements.
-Filename: Water
-
-Places
-----------------------------
-1: testplace (0)
-4: testplace2 (0)
-
-Transitions
-----------------------------
-2: testtrans
-
-Arcs
-----------------------------
-3: testarc (2) 1 -> 2
-
-", @net.merge(net2).to_s, "Merge failed, this is only a basic test"
+        assert_equal "Petri Net [Water]\n----------------------------\nDescription: Creation of water from base elements.\nFilename: Water\n\nPlaces\n----------------------------\n1: testplace (0) \n4: testplace2 (0) \n\nTransitions\n----------------------------\n2: testtrans\n\nArcs\n----------------------------\n3: testarc (2) 1 -> 2\n\n", @net.merge(net2).to_s, "Merge failed, this is only a basic test"
     end
 
     def test_generate_reachability_graph

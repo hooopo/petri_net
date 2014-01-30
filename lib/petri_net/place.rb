@@ -96,7 +96,7 @@ class PetriNet::Place < PetriNet::Base
 
     # Stringify this place.
     def to_s
-        "#{@id}: #{@name} (#{@capacity == nil ? -1 : 0})"
+        "#{@id}: #{@name} (#{@capacity == nil ? -1 : 0}) #{'*' * @markings.length}"
     end
 
     # GraphViz definition

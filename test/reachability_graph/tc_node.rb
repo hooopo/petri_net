@@ -1,11 +1,7 @@
-#!/usr/bin/env ruby
-
 require 'rubygems'
 require 'logger'
 require 'test/unit'
 require "#{File.dirname(__FILE__)}/../../lib/petri_net" 
-
-#require 'pry'
 
 class TestReachabilityGraphNode < Test::Unit::TestCase
     def setup
