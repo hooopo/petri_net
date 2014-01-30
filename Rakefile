@@ -9,7 +9,7 @@ task :default => [:test, :rdoc, :push, :clean]
 
 task(:test) { puts "==> Running main test suite" }
 Rake::TestTask.new(:test) do |t|
-	t.test_files = FileList['test/tc_*.rb']
+	t.test_files = FileList['test/ts_all']
 	t.ruby_opts = ['-rubygems'] if defined? Gem
 end
 

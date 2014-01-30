@@ -1,3 +1,5 @@
+require 'yaml'
+
 class PetriNet::Net < PetriNet::Base
     # Human readable name
     attr_accessor :name
@@ -284,6 +286,14 @@ Arcs
         @objects.find_index object
     end
 
+    def save filename
+        File.open(filename, 'w') {|f| @net.to_yaml}
+    end
+
+    def load filename
+        @net = YAML.load(File.read(filename))
+    end
+
     private
 
     def changed_structure
@@ -301,6 +311,9 @@ Arcs
                 current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
                 current_node_id = @graph.add_node current_node 
                 @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node, probability: @objects[tid].probability) unless current_node_id < 0
+                if current_node_id < 0 && @graph.get_node(current_node_id * -1) < current_node
+                    @graph.getNode(current_node_id * -1).add_omega current_node
+                end
                 reachability_helper get_markings, current_node unless (current_node_id < 0)
             end
             set_markings markings

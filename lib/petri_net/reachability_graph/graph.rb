@@ -1,12 +1,33 @@
+class PetriNet::InfiniteReachabilityGraphError < RuntimeError
+end
+
 class PetriNet::ReachabilityGraph < PetriNet::Base
-    def initialize(net)
+    def initialize(net, options = Hash.new)
         @objects = Array.new
         @nodes = Hash.new
         @edges = Hash.new
         @name = net.name
+        if options['unlimited'].nil? 
+            @unlimited = true 
+        else 
+            @unlimited = options['unlimited']
+        end
     end
 
     def add_node(node)
+        @nodes.each_value do |n|
+            begin
+                if node > @objects[n]
+                    if @unlimited
+                        return @objects[n].id *-1
+                    else
+                        raise PetriNet::ReachabilityGraph::InfiniteReachabilityGraphError
+                    end
+                end
+            rescue ArgumentError
+                #just two different markings, completly ok
+            end
+        end
         node_index = @objects.index node
         if (!node_index.nil?)
             return @objects[node_index].id * -1
@@ -46,6 +67,10 @@ class PetriNet::ReachabilityGraph < PetriNet::Base
         self
     end
     alias_method :add_object, :<<
+
+    def get_node(id)
+        return @objects[id]
+    end
 
     def to_gv
         # General graph options

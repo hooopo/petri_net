@@ -5,7 +5,6 @@ require 'logger'
 require 'test/unit'
 require "#{File.dirname(__FILE__)}/../lib/petri_net" 
 
-#require 'pry'
 
 class TestPetriNet < Test::Unit::TestCase
     def setup
@@ -255,6 +254,12 @@ Edges
         assert_equal 3, @net.objects_size
     end
 
+    def test_save_and_load
+        fill_net
+        @net.save("/tmp/petrinet")
+        net = YAML.load(File.read("/tmp/petrinet"))
+        assert_not_nil net
+    end
 
  #   def test_create_marking
  #       place = PetriNet::Place.new(:name => 'Hydrogen')
