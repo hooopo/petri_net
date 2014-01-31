@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["\"cclausen@tzi.de\""]
   gem.description   = %q{A Petri net modeling gem}
   gem.summary       = %q{You can create Petri Nets and do some calculations with them like generating the Reachability Graph}
-  gem.homepage      = "https://github.com/cclausen/petri"
+  gem.homepage      = "https://github.com/cclausen/petri_net"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
