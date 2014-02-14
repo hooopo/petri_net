@@ -212,11 +212,16 @@ Arcs
         self
     end
 
+    def reachability_graph
+        generate_reachability_graph unless (@graph && @up_to_date)
+        @graph
+    end
+
     def generate_reachability_graph(unlimited = true)
         raise "Not implemented yet" unless unlimited
         startmarkings = get_markings
         @graph = PetriNet::ReachabilityGraph.new(self)
-        @graph.add_node current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
+        @graph.add_node current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings, start: true)
 
         reachability_helper startmarkings, current_node
 
@@ -313,12 +318,15 @@ Arcs
         @transitions.each_value do |tid|
             if @objects[tid].fire
                 current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
-                current_node_id = @graph.add_node current_node 
-                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node, probability: @objects[tid].probability) unless current_node_id < 0
-                if current_node_id < 0 && @graph.get_node(current_node_id * -1) < current_node
+                current_node_id = @graph.add_node current_node
+                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node, probability: @objects[tid].probability, transition: @objects[tid].name) if (!(current_node_id < 0))
+                omega = false
+                if current_node_id != -Float::INFINITY && current_node_id < 0 && @graph.get_node(current_node_id * -1) != current_node
+                    omega = true
                     @graph.get_node(current_node_id * -1).add_omega current_node
+                    @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: @graph.get_node(current_node_id * -1), probability: @objects[tid].probability, transition: @objects[tid].name)
                 end
-                reachability_helper get_markings, current_node unless (current_node_id < 0)
+                reachability_helper get_markings, @graph.get_node(current_node_id.abs) if ((!(current_node_id < 0) || !omega) && current_node_id != -Float::INFINITY )
             end
             set_markings markings
         end

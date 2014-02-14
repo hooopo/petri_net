@@ -17,6 +17,8 @@ class PetriNet::ReachabilityGraph::Node < PetriNet::Base
     attr_reader :outputs
     # Label of the node
     attr_reader :label
+    # True if this is the start-marking
+    attr_reader :start
 
     def initialize(options = {}, &block)
         @id = next_object_id
@@ -26,6 +28,7 @@ class PetriNet::ReachabilityGraph::Node < PetriNet::Base
         @outputs = Array.new
         @label = (options[:label] or @name)
         @markings = options[:markings] 
+        @start = (options[:start] or false)
         if @markings.nil?
             raise ArgumentError.new "Every Node needs markings"
         end
@@ -93,7 +96,7 @@ class PetriNet::ReachabilityGraph::Node < PetriNet::Base
             counter += 1
         end
         if less
-            return -1
+            return -1 
         end
         counter = 0
         more = true

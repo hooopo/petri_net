@@ -1,3 +1,5 @@
+require 'graphviz'
+
 class PetriNet::InfiniteReachabilityGraphError < RuntimeError
 end
 
@@ -16,6 +18,7 @@ class PetriNet::ReachabilityGraph < PetriNet::Base
 
     def add_node(node)
         double = false
+        inf = false
         @nodes.each_value do |n|
             begin
                 if node > @objects[n]
@@ -27,15 +30,20 @@ class PetriNet::ReachabilityGraph < PetriNet::Base
                         raise PetriNet::ReachabilityGraph::InfiniteReachabilityGraphError
                     end
                 end
+                if -Float::INFINITY == (node <=> @objects[n])
+                    inf = true
+                end
             rescue ArgumentError
                 #just two different markings, completly ok
             end
         end
+        # if there was a smaller marking
         return (@objects[double].id * -1) if double
         node_index = @objects.index node
-        if (!node_index.nil?)
-            return @objects[node_index].id * -1
-        end
+        # if there already is a node with this marking
+        return @objects[node_index].id * -1 unless node_index.nil?
+
+        return -Float::INFINITY if inf
 
         if (node.validate && (!@nodes.include? node.name))
             @objects[node.id] = node
@@ -97,6 +105,29 @@ class PetriNet::ReachabilityGraph < PetriNet::Base
 
         return str
 
+    end
+
+    def to_gv_new
+        g = generate_gv
+        g.output( :png => "#{@name}.png" )
+    end
+
+    def generate_gv
+        g = GraphViz.new( :G, :type => :digraph )
+
+        @nodes.each_value do |node|
+            gv_node = g.add_nodes( @objects[node].markings.to_s )
+            gv_node.set do |n|
+                n.label = '*' + @objects[node].markings.to_s + '*' if @objects[node].start 
+            end
+        end
+        @edges.each_value do |edge|
+            gv_edge = g.add_edges( @objects[edge].source.markings.to_s, @objects[edge].destination.markings.to_s )
+            gv_edge.set do |e|
+                e.label = @objects[edge].transition
+            end
+        end
+        g
     end
 
     def to_s

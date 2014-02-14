@@ -16,6 +16,7 @@ Gem::Specification.new do |gem|
   gem.version       = PetriNet::VERSION
   
   gem.license       = 'MIT'
-  #gem.add_dependency "ruby-graphviz"
+  gem.add_dependency "ruby-graphviz"
+  gem.add_dependency "graphviz"
   gem.add_development_dependency "net-sftp"
 end

@@ -7,6 +7,12 @@ class PetriNet::ReachabilityGraph::Edge < PetriNet::Base
     attr_accessor :graph
     # Probability of the relating transition
     attr_accessor :probability
+    # Source of the edge
+    attr_reader :source
+    # Destination of the edge
+    attr_reader :destination
+    # Transition this edge is representing
+    attr_reader :transition
     
     # Creates an edge for PetriNet::ReachabilityGraph
     def initialize(options = {}, &block)
@@ -17,6 +23,7 @@ class PetriNet::ReachabilityGraph::Edge < PetriNet::Base
         @destination = options[:destination]
         @label = (options[:label] or @name)
         @probability = options[:probability]
+        @transition = (options[:transition] or "")
 
         yield self unless block.nil?
     end
