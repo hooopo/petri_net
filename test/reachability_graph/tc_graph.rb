@@ -102,7 +102,7 @@ Edges
         @net << PetriNet::Arc.new(source:@net.get_transition('T'), destination:@net.get_place('A'))
         @net.get_place('A').add_marking
         rn = @net.generate_reachability_graph
-        assert_equal "Reachability Graph [SimpleNet3]\n----------------------------\nDescription: \nFilename: \n\nNodes\n----------------------------\n7: Node7 ([1, Infinity])\n\nEdges\n----------------------------\n9: Edge9 7 -> 7: Node7 ([1, Infinity]) )\n\n", rn.to_s
+        assert_equal "Reachability Graph [SimpleNet3]\n----------------------------\nDescription: \nFilename: \n\nNodes\n----------------------------\n7: Node7 ([1, 0])\n8: Node8 ([1, 1])\n10: Node10 ([Infinity])\n\nEdges\n----------------------------\n9: Edge9 7 -> 8: Node8 ([1, 1]) )\n11: Edge11 8 -> 10: Node10 ([Infinity]) )\n\n", rn.to_s
 
     end
 
@@ -119,8 +119,7 @@ Edges
         @net << PetriNet::Arc.new(source:@net.get_transition('T2'), destination:@net.get_place('A'))
         @net.get_place('A').add_marking
         rn = @net.generate_reachability_graph
-        assert_equal "T2 is missing! Reachability Graph [SimpleNet4]\n----------------------------\nDescription: \nFilename: \n\nNodes\n----------------------------\n10: Node10 ([Infinity, Infinity])\n\nEdges\n----------------------------\n12: Edge12 10 -> 10: Node10 ([Infinity, Infinity]) )\n\n", rn.to_s
-        rn.to_gv_new
+        assert_equal "Reachability Graph [SimpleNet4]\n----------------------------\nDescription: \nFilename: \n\nNodes\n----------------------------\n10: Node10 ([1, 0])\n11: Node11 ([1, 1])\n13: Node13 ([Infinity])\n15: Node15 ([2, 0])\n17: Node17 ([Infinity])\n\nEdges\n----------------------------\n12: Edge12 10 -> 11: Node11 ([1, 1]) )\n14: Edge14 11 -> 13: Node13 ([Infinity]) )\n16: Edge16 10 -> 15: Node15 ([2, 0]) )\n18: Edge18 15 -> 17: Node17 ([Infinity]) )\n\n", rn.to_s
 
     end
 end

@@ -1,5 +1,6 @@
-class PetriNet::ReachabilityGraph::Edge < PetriNet::Graph::Edge
-    # Creates an edge for PetriNet::ReachabilityGraph
+class PetriNet::CoverabilityGraph::Edge < PetriNet::Base
+    
+    # Creates an edge for PetriNet::CoverabilityGraph
     def initialize(options = {}, &block)
         super(options)
         yield self unless block.nil?
@@ -7,7 +8,6 @@ class PetriNet::ReachabilityGraph::Edge < PetriNet::Graph::Edge
 
     # Validates the data holded by this edge, this will be used while adding the edge to the graph
     def validate
-        super 
+        super
     end
-
 end

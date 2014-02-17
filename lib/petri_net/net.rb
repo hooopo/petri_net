@@ -17,8 +17,8 @@ class PetriNet::Net < PetriNet::Base
     # !depricated!
     attr_reader   :markings
 
-# should not be public available    attr_reader   :objects       # Array of all objects in net
-#    attr_reader   :up_to_date    # is true if, and only if, the cached elements are calculated AND the net hasn't changed
+    # should not be public available    attr_reader   :objects       # Array of all objects in net
+    #    attr_reader   :up_to_date    # is true if, and only if, the cached elements are calculated AND the net hasn't changed
 
 
     # Create new Petri Net definition.
@@ -173,6 +173,32 @@ Arcs
         return str
     end
 
+    def to_gv_new(output = 'png', filename = '')
+        g = generate_gv
+        if filename.empty
+            filename = "#{@name}_net.png"
+        end
+        g.output( :png => filename ) if output == 'png'
+        g.output
+    end
+
+    def generate_gv
+        g = GraphViz.new( :G, :type => :digraph )
+
+        @nodes.each_value do |node|
+            gv_node = g.add_nodes( @objects[node].markings.to_s )
+            gv_node.set do |n|
+                n.label = '*' + @objects[node].markings.to_s + '*' if @objects[node].start 
+            end
+        end
+        @edges.each_value do |edge|
+            gv_edge = g.add_edges( @objects[edge].source.markings.to_s, @objects[edge].destination.markings.to_s )
+            gv_edge.set do |e|
+                e.label = @objects[edge].transition
+            end
+        end
+        g
+    end
     # Generate GraphViz dot string.
     def to_gv
         # General graph options
@@ -201,6 +227,7 @@ Arcs
         return str
     end
 
+
     # Merges two PetriNets
     # Places, transitions and arcs are equal if they have the same name and description, arcs need to have the same source and destination too). With this definition of equality the resultung net will have unique ojects.
     # ATTENTION conflicting capabilities and weights will be lost and the properies of the net you merge to will be used in future
@@ -217,8 +244,18 @@ Arcs
         @graph
     end
 
-    def generate_reachability_graph(unlimited = true)
-        raise "Not implemented yet" unless unlimited
+    def generate_coverability_graph()
+        startmarkings = get_markings
+        @graph = PetriNet::CoverabilityGraph.new(self)
+        @graph.add_node current_node = PetriNet::CoverabilityGraph::Node.new(markings: get_markings, start: true)
+
+        coverability_helper startmarkings, current_node
+
+        set_markings startmarkings
+        @graph 
+    end
+
+    def generate_reachability_graph()
         startmarkings = get_markings
         @graph = PetriNet::ReachabilityGraph.new(self)
         @graph.add_node current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings, start: true)
@@ -228,6 +265,7 @@ Arcs
         set_markings startmarkings
         @graph 
     end
+
     def generate_weight_function
         @weight = Hash.new
         @arcs.each_value do |id|
@@ -247,7 +285,7 @@ Arcs
         generate_weight_function
         @up_to_date = true
     end
-    
+
     # is true if, and only if, the cached elements are calculated AND the net hasn't changed
     def update?
         if @w_up_to_date && true #all up_to_date-caches!!!
@@ -318,15 +356,40 @@ Arcs
         @transitions.each_value do |tid|
             if @objects[tid].fire
                 current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
+                begin
+                    @graph.add_node current_node
+                rescue
+                    @graph.add_node! current_node
+                    @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node)
+                    infinity_node = PetriNet::ReachabilityGraph::InfinityNode.new
+                    @graph.add_node infinity_node 
+                    @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: current_node, destination: infinity_node)
+                    next 
+                end
+                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node)
+                reachability_helper get_markings, current_node
+            end
+            set_markings markings
+        end
+    end
+
+    def coverability_helper(markings, source, added_omega = false)
+        @transitions.each_value do |tid|
+            if @objects[tid].fire
+                current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
                 current_node_id = @graph.add_node current_node
                 @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node, probability: @objects[tid].probability, transition: @objects[tid].name) if (!(current_node_id < 0))
                 omega = false
                 if current_node_id != -Float::INFINITY && current_node_id < 0 && @graph.get_node(current_node_id * -1) != current_node
                     omega = true
-                    @graph.get_node(current_node_id * -1).add_omega current_node
+                    added_omega_old = added_omega
+                    added_omega = @graph.get_node(current_node_id * -1).add_omega current_node
+                    if added_omega_old == added_omega
+                        break
+                    end
                     @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: @graph.get_node(current_node_id * -1), probability: @objects[tid].probability, transition: @objects[tid].name)
                 end
-                reachability_helper get_markings, @graph.get_node(current_node_id.abs) if ((!(current_node_id < 0) || !omega) && current_node_id != -Float::INFINITY )
+                reachability_helper get_markings, @graph.get_node(current_node_id.abs), added_omega if ((!(current_node_id < 0) || !omega) && current_node_id != -Float::INFINITY )
             end
             set_markings markings
         end

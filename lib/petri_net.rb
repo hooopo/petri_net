@@ -23,11 +23,12 @@
 # This library provides a way to represent petri nets in ruby and do some algorithms on them as generating the Reachability Graph. 
 
 # Holds the path of the base-file petri_net.rb
-PETRI_LIB_FILE_PATH = File.dirname(__FILE__)
-require "#{PETRI_LIB_FILE_PATH}/petri_net/base"
-require "#{PETRI_LIB_FILE_PATH}/petri_net/net"
-require "#{PETRI_LIB_FILE_PATH}/petri_net/place"
-require "#{PETRI_LIB_FILE_PATH}/petri_net/transition"
-require "#{PETRI_LIB_FILE_PATH}/petri_net/arc"
-require "#{PETRI_LIB_FILE_PATH}/petri_net/marking"
-require "#{PETRI_LIB_FILE_PATH}/petri_net/reachability_graph"
+PETRI_NET_LIB_FILE_PATH = File.dirname(__FILE__)
+require "#{PETRI_NET_LIB_FILE_PATH}/petri_net/base"
+require "#{PETRI_NET_LIB_FILE_PATH}/petri_net/net"
+require "#{PETRI_NET_LIB_FILE_PATH}/petri_net/place"
+require "#{PETRI_NET_LIB_FILE_PATH}/petri_net/transition"
+require "#{PETRI_NET_LIB_FILE_PATH}/petri_net/arc"
+require "#{PETRI_NET_LIB_FILE_PATH}/petri_net/marking"
+require "#{PETRI_NET_LIB_FILE_PATH}/petri_net/reachability_graph"
+require "#{PETRI_NET_LIB_FILE_PATH}/petri_net/coverability_graph"
