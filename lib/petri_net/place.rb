@@ -108,18 +108,16 @@ class PetriNet::Place < PetriNet::Base
     end
 
 private
-    def validate_input(arc)
-        self.inputs.each do |a|
-            return false if a == arc
+        def validate_input(arc)
+            self.inputs.each do |a|
+                return false if ((@net.get_objects[a] <=> arc) == 0)
+            end
+            true
+        end 
+        def validate_output(arc)
+            self.outputs.each do |a|
+                return false if ((@net.get_objects[a] <=> arc) == 0)
+            end
+            true
         end
-        true
-    end
-    def validate_output(arc)
-        self.outputs.each do |a|
-            return false if a == arc
-        end
-        true
-    end
-
-
 end 

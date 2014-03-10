@@ -354,6 +354,8 @@ Arcs
 
     def reachability_helper(markings, source)
         @transitions.each_value do |tid|
+            raise PetriNet::ReachabilityGraph::InfinityGraphError if @objects[tid].inputs.empty? && !@objects[tid].outputs.empty?
+            next if @objects[tid].inputs.empty?
             if @objects[tid].fire
                 current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
                 begin

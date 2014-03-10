@@ -112,13 +112,13 @@ module PetriNet
 private
         def validate_input(arc)
             self.inputs.each do |a|
-                return false if a == arc
+                return false if ((@net.get_objects[a] <=> arc) == 0)
             end
             true
         end 
         def validate_output(arc)
             self.outputs.each do |a|
-                return false if a == arc
+                return false if ((@net.get_objects[a] <=> arc) == 0)
             end
             true
         end
