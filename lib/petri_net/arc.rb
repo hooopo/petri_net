@@ -117,6 +117,12 @@ module PetriNet
             @destination.id = net.objects_find_index @destination
         end
 
+        def <=>(object)
+            return false unless object.class.to_s == "PetriNet::Arc"
+            return false unless object.source == self.source && object.destination == self.destination
+            return object.weight <=> self.weight
+        end
+
         private
 
         # Validate source or destination object

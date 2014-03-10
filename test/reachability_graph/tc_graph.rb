@@ -166,4 +166,20 @@ Edges
         assert_equal "", rg.to_s
 
     end
+
+    def test_empty_net1
+        @net = PetriNet::Net.new(:name => 'EmptyNet1', :description => 'Should be boring')
+        @net.generate_reachability_graph # Don't know what to test here, bit this crashed with an Error before...
+    end
+    def test_empty_net2
+        @net = PetriNet::Net.new(:name => 'EmptyNet2', :description => 'Should be boring')
+        @net << PetriNet::Place.new(name: 'A')
+        @net.generate_reachability_graph # Don't know what to test here, bit this crashed with an Error before...
+    end
+    def test_empty_net3
+        @net = PetriNet::Net.new(:name => 'EmptyNet3', :description => 'Should be boring')
+        @net << PetriNet::Place.new(name: 'A')
+        @net << PetriNet::Transition.new(name:'T1')
+        @net.generate_reachability_graph # Don't know what to test here, bit this crashed with an Error before...
+    end
 end

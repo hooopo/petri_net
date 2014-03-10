@@ -30,12 +30,12 @@ module PetriNet
 
         # Add an input arc
         def add_input(arc)
-            @inputs << arc.id unless arc.nil?
+            @inputs << arc.id unless (arc.nil? or !validate_input arc)
         end
 
         # Add an output arc
         def add_output(arc)
-            @outputs << arc.id unless arc.nil?
+            @outputs << arc.id unless (arc.nil? or !validate_output arc)
         end
 
         # GraphViz ID
@@ -105,6 +105,20 @@ module PetriNet
 
             @outputs.each do |o|
                 @net.get_object(o).destination.add_marking @net.get_object(o).weight
+            end
+            true
+        end
+        
+private
+        def validate_input(arc)
+            self.inputs.each do |a|
+                return false if a == arc
+            end
+            true
+        end 
+        def validate_output(arc)
+            self.outputs.each do |a|
+                return false if a == arc
             end
             true
         end

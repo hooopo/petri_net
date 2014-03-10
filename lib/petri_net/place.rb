@@ -33,12 +33,12 @@ class PetriNet::Place < PetriNet::Base
 
     # Add an input arc
     def add_input(arc)
-        @inputs << arc.id unless arc.nil?
+        @inputs << arc.id unless (arc.nil? or !validate_input arc)
     end
 
     # Add an output arc
     def add_output(arc)
-        @outputs << arc.id unless arc.nil?
+        @outputs << arc.id unless (arc.nil? or !validate_input arc)
     end
 
     def add_marking(count = 1)
@@ -106,5 +106,20 @@ class PetriNet::Place < PetriNet::Base
     def ==(object)
         return true if name == object.name && description = object.description
     end
+
+private
+    def validate_input(arc)
+        self.inputs.each do |a|
+            return false if a == arc
+        end
+        true
+    end
+    def validate_output(arc)
+        self.outputs.each do |a|
+            return false if a == arc
+        end
+        true
+    end
+
 
 end 
