@@ -122,4 +122,48 @@ Edges
         assert_equal "Reachability Graph [SimpleNet4]\n----------------------------\nDescription: \nFilename: \n\nNodes\n----------------------------\n10: Node10 ([1, 0])\n11: Node11 ([1, 1])\n13: Node13 ([Infinity])\n15: Node15 ([2, 0])\n17: Node17 ([Infinity])\n\nEdges\n----------------------------\n12: Edge12 10 -> 11: Node11 ([1, 1]) )\n14: Edge14 11 -> 13: Node13 ([Infinity]) )\n16: Edge16 10 -> 15: Node15 ([2, 0]) )\n18: Edge18 15 -> 17: Node17 ([Infinity]) )\n\n", rn.to_s
 
     end
+
+    def test_simple_net_5
+        @net = PetriNet::Net.new(:name => 'SimpleNet5', :description => 'PTPTP')
+        @net << PetriNet::Place.new(name: 'A')
+        @net << PetriNet::Place.new(name: 'B')
+        @net << PetriNet::Transition.new(name:'T1')
+        @net << PetriNet::Transition.new(name:'T2')
+        @net << PetriNet::Arc.new(source:@net.get_place('A'), destination:@net.get_transition('T1'))
+        @net << PetriNet::Arc.new(source:@net.get_transition('T1'), destination:@net.get_place('B'))
+        @net << PetriNet::Arc.new(source:@net.get_place('B'), destination:@net.get_transition('T2'))
+        @net << PetriNet::Arc.new(source:@net.get_transition('T2'), destination:@net.get_place('A'))
+        @net.get_place('A').add_marking
+        @net.to_gv_new
+        rn = @net.generate_reachability_graph
+        assert_equal "Reachability Graph [SimpleNet5]\n----------------------------\nDescription: \nFilename: \n\nNodes\n----------------------------\n9: Node9 ([1, 0])\n10: Node10 ([0, 1])\n\nEdges\n----------------------------\n11: Edge11 9 -> 10: Node10 ([0, 1]) )\n\n", rn.to_s
+
+        rn.to_gv
+    end
+
+    def test_real_net_1
+        @net = PetriNet::Net.new(:name => 'RealNet1', :description => 'Failed in real situation')
+        @net << PetriNet::Place.new(name: 'A')
+        @net << PetriNet::Place.new(name: 'B')
+        @net << PetriNet::Place.new(name: 'C')
+        @net << PetriNet::Place.new(name: 'D')
+        @net << PetriNet::Transition.new(name:'T1')
+        @net << PetriNet::Transition.new(name:'T2')
+        @net << PetriNet::Transition.new(name:'T3')
+        @net << PetriNet::Arc.new(source:@net.get_place('A'), destination:@net.get_transition('T1'))
+        @net << PetriNet::Arc.new(source:@net.get_transition('T1'), destination:@net.get_place('B'))
+        @net << PetriNet::Arc.new(source:@net.get_transition('T1'), destination:@net.get_place('D'))
+        @net << PetriNet::Arc.new(source:@net.get_place('B'), destination:@net.get_transition('T2'))
+        @net << PetriNet::Arc.new(source:@net.get_transition('T2'), destination:@net.get_place('C'))
+        @net << PetriNet::Arc.new(source:@net.get_transition('T2'), destination:@net.get_place('D'))
+        @net << PetriNet::Arc.new(source:@net.get_place('D'), destination:@net.get_transition('T3'))
+        @net << PetriNet::Arc.new(source:@net.get_transition('T3'), destination:@net.get_place('A'))
+        @net.get_place('A').add_marking
+        @net.to_gv_new
+        rg = @net.generate_reachability_graph
+
+        rg.to_gv
+        assert_equal "", rg.to_s
+
+    end
 end

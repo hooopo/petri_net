@@ -18,7 +18,7 @@ class PetriNet::Graph < PetriNet::Base
     end
 
     def add_node(node)
-        if node.validate
+        if node.validate && (!@objects.include? node)
             @objects[node.id] = node
             @nodes[node.name] = node.id
             node.graph = self

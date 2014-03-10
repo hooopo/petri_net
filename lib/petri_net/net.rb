@@ -175,7 +175,7 @@ Arcs
 
     def to_gv_new(output = 'png', filename = '')
         g = generate_gv
-        if filename.empty
+        if filename.empty?
             filename = "#{@name}_net.png"
         end
         g.output( :png => filename ) if output == 'png'
@@ -185,20 +185,20 @@ Arcs
     def generate_gv
         g = GraphViz.new( :G, :type => :digraph )
 
-        @nodes.each_value do |node|
-            gv_node = g.add_nodes( @objects[node].markings.to_s )
-            gv_node.set do |n|
-                n.label = '*' + @objects[node].markings.to_s + '*' if @objects[node].start 
-            end
+        @places.each_value do |place|
+            gv_node = g.add_nodes( @objects[place].name )
         end
-        @edges.each_value do |edge|
-            gv_edge = g.add_edges( @objects[edge].source.markings.to_s, @objects[edge].destination.markings.to_s )
-            gv_edge.set do |e|
-                e.label = @objects[edge].transition
-            end
+        @transitions.each_value do |transition|
+            gv_node = g.add_nodes( @objects[transition].name)
+            gv_node.shape = :box
+            gv_node.fillcolor = :grey90
+        end
+        @arcs.each_value do |arc|
+            gv_edge = g.add_edges( @objects[arc].source.name, @objects[arc].destination.name )
         end
         g
     end
+
     # Generate GraphViz dot string.
     def to_gv
         # General graph options
@@ -357,7 +357,7 @@ Arcs
             if @objects[tid].fire
                 current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
                 begin
-                    @graph.add_node current_node
+                    node_id = @graph.add_node current_node
                 rescue
                     @graph.add_node! current_node
                     @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node)
@@ -367,7 +367,7 @@ Arcs
                     next 
                 end
                 @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node)
-                reachability_helper get_markings, current_node
+                reachability_helper get_markings, current_node unless node_id
             end
             set_markings markings
         end
@@ -389,7 +389,7 @@ Arcs
                     end
                     @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: @graph.get_node(current_node_id * -1), probability: @objects[tid].probability, transition: @objects[tid].name)
                 end
-                reachability_helper get_markings, @graph.get_node(current_node_id.abs), added_omega if ((!(current_node_id < 0) || !omega) && current_node_id != -Float::INFINITY )
+                coverability_helper get_markings, @graph.get_node(current_node_id.abs), added_omega if ((!(current_node_id < 0) || !omega) && current_node_id != -Float::INFINITY )
             end
             set_markings markings
         end
