@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'logger'
 require 'test/unit'
-require 'pry'
 
 class TestPetriNetReachabilityGraph < Test::Unit::TestCase
     def setup

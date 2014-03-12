@@ -368,8 +368,8 @@ Arcs
                     @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: current_node, destination: infinity_node)
                     next 
                 end
-                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node)
-                reachability_helper get_markings, current_node unless node_id
+                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node) if node_id
+                reachability_helper get_markings, current_node if node_id
             end
             set_markings markings
         end
