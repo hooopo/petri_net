@@ -1,4 +1,5 @@
 require 'yaml'
+require 'graphviz'
 
 class PetriNet::Net < PetriNet::Base
     # Human readable name
