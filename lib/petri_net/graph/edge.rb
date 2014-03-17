@@ -31,6 +31,7 @@ class PetriNet::Graph::Edge < PetriNet::Base
 
     # Validates the data holded by this edge, this will be used while adding the edge to the graph
     def validate
+        return false unless ( @graph.nodes.has_key? @source.name and @graph.nodes.has_key? @destination.name )
         true
     end
 

@@ -1,5 +1,5 @@
 require 'graphviz'
-
+require 'graphviz/theory'
 class PetriNet::InfiniteReachabilityGraphError < RuntimeError
 end
 
@@ -7,6 +7,10 @@ class PetriNet::Graph < PetriNet::Base
 
     # The PetriNet this graph belongs to
     attr_reader :net
+    # all nodes from this graph
+    attr_reader :nodes
+    # all edges of this graph
+    attr_reader :edges
 
     def initialize(net, options = Hash.new)
         @net = net
@@ -116,6 +120,15 @@ class PetriNet::Graph < PetriNet::Base
         str += "\n"
 
         return str
+    end
+
+    def shortest_path(start, destination)
+        g = generate_gv
+        t = GraphViz::Theory.new(g) 
+
+        t.moore_dijkstra(g.start, g.destination)
+        r[:path]
+
     end
 
 end

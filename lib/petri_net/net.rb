@@ -300,6 +300,10 @@ Arcs
         @places.map{|key,pid| @objects[pid].markings.size}
     end
 
+    def get_marking(places)
+        get_place_list.map{|place_name| places.include? place_name ? 1 : 0 }
+    end
+
     def set_markings(markings)
         i = 0
         @places.each_value do |pid| 
