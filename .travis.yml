@@ -5,7 +5,8 @@ rvm:
 - 2.0.0
 
 before_install:
-    gem install net-sftp
+    - gem install net-sftp
+    - sudo apt-get install graphviz
 
 script: 
-    rake test
+    - rake test
