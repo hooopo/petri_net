@@ -1,13 +1,13 @@
 class PetriNet::ReachabilityGraph::Node < PetriNet::Graph::Node
-    def initialize(options = {}, &block)
-        super(options)
+    def initialize(graph, options = {}, &block)
+        super(graph, options)
         yield self unless block.nil?
     end
 
 end
 
 class PetriNet::ReachabilityGraph::InfinityNode < PetriNet::ReachabilityGraph::Node
-    def initialize()
-        super(markings: [Float::INFINITY])
+    def initialize(graph)
+        super(graph, markings: [Float::INFINITY])
     end
 end

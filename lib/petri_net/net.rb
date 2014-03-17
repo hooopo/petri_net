@@ -247,7 +247,7 @@ Arcs
     def generate_coverability_graph()
         startmarkings = get_markings
         @graph = PetriNet::CoverabilityGraph.new(self)
-        @graph.add_node current_node = PetriNet::CoverabilityGraph::Node.new(markings: get_markings, start: true)
+        @graph.add_node current_node = PetriNet::CoverabilityGraph::Node.new(@graph, markings: get_markings, start: true)
 
         coverability_helper startmarkings, current_node
 
@@ -258,7 +258,7 @@ Arcs
     def generate_reachability_graph()
         startmarkings = get_markings
         @graph = PetriNet::ReachabilityGraph.new(self)
-        @graph.add_node current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings, start: true)
+        @graph.add_node current_node = PetriNet::ReachabilityGraph::Node.new(@graph, markings: get_markings, start: true)
 
         reachability_helper startmarkings, current_node
 
@@ -309,6 +309,11 @@ Arcs
         changed_state
     end
 
+    def get_place_list
+        @places.map{|key,pid| @objects[pid]}
+    end
+
+
     def objects_size
         @objects.count{|o| !o.nil?}
     end
@@ -357,18 +362,18 @@ Arcs
             raise PetriNet::ReachabilityGraph::InfinityGraphError if @objects[tid].inputs.empty? && !@objects[tid].outputs.empty?
             next if @objects[tid].inputs.empty?
             if @objects[tid].fire
-                current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
+                current_node = PetriNet::ReachabilityGraph::Node.new(@graph, markings: get_markings)
                 begin
                     node_id = @graph.add_node current_node
                 rescue
                     @graph.add_node! current_node
-                    @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node)
-                    infinity_node = PetriNet::ReachabilityGraph::InfinityNode.new
+                    @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(@graph, source: source, destination: current_node)
+                    infinity_node = PetriNet::ReachabilityGraph::InfinityNode.new(@graph)
                     @graph.add_node infinity_node 
-                    @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: current_node, destination: infinity_node)
+                    @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(@graph, source: current_node, destination: infinity_node)
                     next 
                 end
-                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node) if node_id
+                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(@graph, source: source, destination: current_node)# if node_id
                 reachability_helper get_markings, current_node if node_id
             end
             set_markings markings
@@ -378,9 +383,9 @@ Arcs
     def coverability_helper(markings, source, added_omega = false)
         @transitions.each_value do |tid|
             if @objects[tid].fire
-                current_node = PetriNet::ReachabilityGraph::Node.new(markings: get_markings)
+                current_node = PetriNet::ReachabilityGraph::Node.new(@graph, markings: get_markings)
                 current_node_id = @graph.add_node current_node
-                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: current_node, probability: @objects[tid].probability, transition: @objects[tid].name) if (!(current_node_id < 0))
+                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(@graph, source: source, destination: current_node, probability: @objects[tid].probability, transition: @objects[tid].name) if (!(current_node_id < 0))
                 omega = false
                 if current_node_id != -Float::INFINITY && current_node_id < 0 && @graph.get_node(current_node_id * -1) != current_node
                     omega = true
@@ -389,7 +394,7 @@ Arcs
                     if added_omega_old == added_omega
                         break
                     end
-                    @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(source: source, destination: @graph.get_node(current_node_id * -1), probability: @objects[tid].probability, transition: @objects[tid].name)
+                    @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(@graph, source: source, destination: @graph.get_node(current_node_id * -1), probability: @objects[tid].probability, transition: @objects[tid].name)
                 end
                 coverability_helper get_markings, @graph.get_node(current_node_id.abs), added_omega if ((!(current_node_id < 0) || !omega) && current_node_id != -Float::INFINITY )
             end

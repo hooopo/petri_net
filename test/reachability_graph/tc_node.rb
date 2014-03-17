@@ -6,7 +6,8 @@ require "#{File.dirname(__FILE__)}/../../lib/petri_net"
 class TestReachabilityGraphNode < Test::Unit::TestCase
     def setup
         @net = PetriNet::Net.new(:name => 'Water', :description => 'Creation of water from base elements.')
-        @node = PetriNet::ReachabilityGraph::Node.new(markings: [1,3,5,4,0])
+        @graph = PetriNet::ReachabilityGraph.new(@net)
+        @node = PetriNet::ReachabilityGraph::Node.new(@graph, markings: [1,3,5,4,0])
     end
 
     def teardown
@@ -14,7 +15,7 @@ class TestReachabilityGraphNode < Test::Unit::TestCase
     end
 
     def test_create_node
-        node = PetriNet::ReachabilityGraph::Node.new(markings: [1,3,5,4,0])
+        node = PetriNet::ReachabilityGraph::Node.new(@graph, markings: [1,3,5,4,0])
         assert_not_nil node
         assert_equal "Node2", node.name
         assert_equal [], node.inputs
@@ -25,7 +26,7 @@ class TestReachabilityGraphNode < Test::Unit::TestCase
     end
 
     def test_omega_marking
-        node = PetriNet::ReachabilityGraph::Node.new(markings: [1,3,5,Float::INFINITY,0])
+        node = PetriNet::ReachabilityGraph::Node.new(@graph, markings: [1,3,5,Float::INFINITY,0])
         assert node.omega_marked, "should be omega_marked as there is an omega marking"
     end
 
@@ -37,12 +38,12 @@ class TestReachabilityGraphNode < Test::Unit::TestCase
     end
 
     def test_compare
-        node1 = PetriNet::ReachabilityGraph::Node.new(markings: [0,1,0,0,1])
-        node2 = PetriNet::ReachabilityGraph::Node.new(markings: [0,1,0,0,1])
-        node3 = PetriNet::ReachabilityGraph::Node.new(markings: [0,0,1,0,1])
-        node4 = PetriNet::ReachabilityGraph::Node.new(markings: [0,2,0,0,1])
-        node5 = PetriNet::ReachabilityGraph::Node.new(markings: [1,1,0,0,1])
-        node6 = PetriNet::ReachabilityGraph::Node.new(markings: [1,1,0,0,0])
+        node1 = PetriNet::ReachabilityGraph::Node.new(@graph, markings: [0,1,0,0,1])
+        node2 = PetriNet::ReachabilityGraph::Node.new(@graph, markings: [0,1,0,0,1])
+        node3 = PetriNet::ReachabilityGraph::Node.new(@graph, markings: [0,0,1,0,1])
+        node4 = PetriNet::ReachabilityGraph::Node.new(@graph, markings: [0,2,0,0,1])
+        node5 = PetriNet::ReachabilityGraph::Node.new(@graph, markings: [1,1,0,0,1])
+        node6 = PetriNet::ReachabilityGraph::Node.new(@graph, markings: [1,1,0,0,0])
 
         assert node1 == node1
         assert node2 == node2

@@ -20,7 +20,8 @@ class PetriNet::Graph::Node < PetriNet::Base
     # True if this is the start-marking
     attr_reader :start
 
-    def initialize(options = {}, &block)
+    def initialize(graph, options = {}, &block)
+        @graph = graph
         @id = next_object_id
         @name = (options[:name] or "Node#{@id}")
         @description = (options[:description] or "Node #{@id}")
@@ -70,6 +71,19 @@ class PetriNet::Graph::Node < PetriNet::Base
         end
         @omega_marked = true
         ret
+    end
+
+    def include_place(place)
+        places = @graph.net.get_place_list
+        included_places = Array.new
+        i = 0
+        @markings.each do |m|
+            if m > 0
+                included_places << places[i]
+            end
+            i += 1
+        end
+        included_places.include? place
     end
 
     def validate

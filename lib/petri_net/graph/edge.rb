@@ -15,7 +15,8 @@ class PetriNet::Graph::Edge < PetriNet::Base
     attr_reader :transition
     
     # Creates an edge for PetriNet::Graph
-    def initialize(options = {}, &block)
+    def initialize(graph, options = {}, &block)
+        @graph = graph
         @id = next_object_id
         @name = (options[:name] or "Edge#{@id}")
         @description = (options[:description] or "Edge #{@id}")

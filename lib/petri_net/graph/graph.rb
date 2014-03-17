@@ -4,7 +4,12 @@ class PetriNet::InfiniteReachabilityGraphError < RuntimeError
 end
 
 class PetriNet::Graph < PetriNet::Base
+
+    # The PetriNet this graph belongs to
+    attr_reader :net
+
     def initialize(net, options = Hash.new)
+        @net = net
         @objects = Array.new
         @nodes = Hash.new
         @edges = Hash.new
@@ -55,7 +60,15 @@ class PetriNet::Graph < PetriNet::Base
     alias_method :add_object, :<<
 
     def get_node(id)
-        return @objects[id]
+        @objects[id]
+    end
+
+    def get_nodes
+        res = Array.new
+        @nodes.each_value do |n|
+            res << @objects[n]
+        end
+        res
     end
 
     def to_gv(output = 'png', filename = '')

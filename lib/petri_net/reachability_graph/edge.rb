@@ -1,7 +1,7 @@
 class PetriNet::ReachabilityGraph::Edge < PetriNet::Graph::Edge
     # Creates an edge for PetriNet::ReachabilityGraph
-    def initialize(options = {}, &block)
-        super(options)
+    def initialize(graph, options = {}, &block)
+        super(graph, options)
         yield self unless block.nil?
     end
 
