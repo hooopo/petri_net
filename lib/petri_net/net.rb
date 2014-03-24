@@ -302,7 +302,9 @@ Arcs
     end
 
     def get_marking(places)
-        get_place_list.map{|place_name| places.include? place_name ? 1 : 0 }
+        res = Array.new
+        get_place_list.map{|place| if places.include? place.name then res << 1 else res << 0 end}
+        res
     end
 
     def set_markings(markings)
@@ -316,6 +318,10 @@ Arcs
 
     def get_place_list
         @places.map{|key,pid| @objects[pid]}
+    end
+
+    def get_place_from_marking(marking)
+        raise "Not implemented jet"
     end
 
 

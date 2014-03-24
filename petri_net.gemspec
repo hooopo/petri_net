@@ -17,5 +17,6 @@ Gem::Specification.new do |gem|
   
   gem.license       = 'MIT'
   gem.add_dependency "ruby-graphviz"
+  gem.add_dependency "rgl"
   gem.add_development_dependency "net-sftp"
 end

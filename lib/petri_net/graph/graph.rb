@@ -1,5 +1,7 @@
 require 'graphviz'
 require 'graphviz/theory'
+require 'rgl/adjacency'
+require 'rgl/dijkstra'
 class PetriNet::InfiniteReachabilityGraphError < RuntimeError
 end
 
@@ -99,7 +101,18 @@ class PetriNet::Graph < PetriNet::Base
                 e.label = @objects[edge].transition
             end
         end
-        g
+        @gv = g
+    end
+
+    def generate_rgl
+        g = RGL::DirectedAdjacencyGraph.new 
+        @nodes.each_value do |node|
+            g.add_vertex @objects[node].markings.to_s
+        end
+        @edges.each_value do |edge|
+            g.add_edge @objects[edge].source.markings.to_s, @objects[edge].destination.markings.to_s
+        end
+        @rgl = g
     end
 
     def to_s
@@ -122,13 +135,19 @@ class PetriNet::Graph < PetriNet::Base
         return str
     end
 
-    def shortest_path(start, destination)
-        g = generate_gv
-        t = GraphViz::Theory.new(g) 
-
-        t.moore_dijkstra(g.start, g.destination)
-        r[:path]
-
+    def get_rgl
+        if @rgl.nil?
+            generate_rgl
+        end
+        @rgl
     end
+
+    def shortest_path(start, destination)
+        g = get_rgl
+        weights = lambda { |edge| 1 }
+        g.dijkstra_shortest_path(weights, start.to_s, destination.to_s)
+    end
+
+    
 
 end
