@@ -1,7 +1,10 @@
 require 'yaml'
 require 'graphviz'
+require 'matrix'
+require 'bigdecimal/ludcmp'
 
 class PetriNet::Net < PetriNet::Base
+    include LUSolve
     # Human readable name
     attr_accessor :name
     # Storage filename
@@ -357,7 +360,45 @@ Arcs
         get_transition(transition).fire
     end
 
+    def delta
+        if @delta.nil?
+            generate_delta
+        end
+        @delta
+    end
+
+    def t_invariants
+        delta = self.delta
+        zero_vector = Array.new
+        delta.row_count.times { zero_vector << 0 }
+        zero = BigDecimal("0.0")
+        one  = BigDecimal("1.0")
+
+        ps = ludecomp(delta.to_a.flatten.map{|i|BigDecimal(i,16)},delta.row_count, zero, one)
+        x = lusolve(delta.to_a.flatten.map{|i|BigDecimal(i,16)},zero_vector.map{|i|BigDecimal(i,16)},ps, zero)
+
+        x
+    end
+
+    def s_invariant
+
+    end
+
     private
+
+    def generate_delta
+        d = Array.new(@places.size){Array.new(@transitions.size)}
+        i = 0
+        @places.each do |p_key,p_value|
+            j = 0
+            @transitions.each do |t_key,t_value|
+                d[i][j] = w0(t_value, p_value) - w0(p_value,t_value)
+                i += 1
+                j += 1
+            end
+        end
+        @delta = Matrix[d]
+    end
 
     def changed_structure
         @w_up_to_date = false

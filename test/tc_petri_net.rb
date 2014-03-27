@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'logger'
 require 'test/unit'
+require 'pry'
 require "#{File.dirname(__FILE__)}/../lib/petri_net" 
 
 
@@ -277,6 +278,11 @@ Edges
         fill_net
         weight = {[1,2] => 2}
         assert_equal weight, @net.generate_weight_function
+    end
+
+    def test_t_invariants
+        fill_net
+        assert BigDecimal("0.0") == @net.t_invariants.first
     end
 
     def test_get_markings
