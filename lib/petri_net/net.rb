@@ -374,8 +374,8 @@ Arcs
         zero = BigDecimal("0.0")
         one  = BigDecimal("1.0")
 
-        ps = ludecomp(delta.to_a.flatten.map{|i|BigDecimal(i,16)},delta.row_count, zero, one)
-        x = lusolve(delta.to_a.flatten.map{|i|BigDecimal(i,16)},zero_vector.map{|i|BigDecimal(i,16)},ps, zero)
+        ps = ludecomp(delta.t.to_a.flatten.map{|i|BigDecimal(i,16)},delta.row_count, zero, one)
+        x = lusolve(delta.t.to_a.flatten.map{|i|BigDecimal(i,16)},zero_vector.map{|i|BigDecimal(i,16)},ps, zero)
 
         x
     end
@@ -393,9 +393,9 @@ Arcs
             j = 0
             @transitions.each do |t_key,t_value|
                 d[i][j] = w0(t_value, p_value) - w0(p_value,t_value)
-                i += 1
                 j += 1
             end
+            i += 1
         end
         @delta = Matrix[d]
     end
@@ -408,7 +408,6 @@ Arcs
     def changed_state
         @up_to_date = false
     end
-
     def reachability_helper(markings, source)
         @transitions.each_value do |tid|
             raise PetriNet::ReachabilityGraph::InfinityGraphError if @objects[tid].inputs.empty? && !@objects[tid].outputs.empty?
@@ -425,8 +424,11 @@ Arcs
                     @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(@graph, source: current_node, destination: infinity_node)
                     next 
                 end
+                if node_id < 0
+                    current_node = @graph.get_node node_id.abs
+                end
                 @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(@graph, source: source, destination: current_node)# if node_id
-                reachability_helper get_markings, current_node if node_id
+                reachability_helper get_markings, current_node if node_id >= 0
             end
             set_markings markings
         end

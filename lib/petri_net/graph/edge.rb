@@ -44,7 +44,7 @@ class PetriNet::Graph::Edge < PetriNet::Base
         (@source == object.yource && @destination == oject.destination)
     end
     def to_s
-        "#{@id}: #{@name} #{@source.id} -> #{@destination} )"
+        "#{@id}: #{@name} #{@source} -> #{@destination} )"
     end
 
     private

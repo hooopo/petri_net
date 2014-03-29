@@ -35,6 +35,10 @@ class PetriNet::Graph < PetriNet::Base
             node.graph = self
             return node.id
         end
+        if @objects.include? node
+            res = (@objects.index node) * -1
+            return res 
+        end
         return false
     end
     alias_method :add_node!, :add_node
