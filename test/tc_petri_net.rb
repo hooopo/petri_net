@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'logger'
 require 'test/unit'
-require 'pry'
 require "#{File.dirname(__FILE__)}/../lib/petri_net" 
 
 

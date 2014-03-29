@@ -42,6 +42,10 @@ class PetriNet::Graph::Node < PetriNet::Base
         yield self unless block.nil?
     end
 
+    def infinite?
+        @omega_marked
+    end
+
     # Add an omega-marking to a specified place
     def add_omega object 
         ret = Array.new

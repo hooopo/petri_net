@@ -81,6 +81,13 @@ class PetriNet::Graph < PetriNet::Base
         res
     end
 
+    def infinite?
+        @nodes.each_value do |node|
+            return true if @objects[node].infinite?
+        end
+        false
+    end
+
     def to_gv(output = 'png', filename = '')
         g = generate_gv
         if filename.empty?
@@ -144,6 +151,10 @@ class PetriNet::Graph < PetriNet::Base
             generate_rgl
         end
         @rgl
+    end
+
+    def cycles
+        get_rgl.cycles
     end
 
     def shortest_path(start, destination)
