@@ -244,6 +244,9 @@ Arcs
     end
 
     def reachability_graph
+        if !@up_to_date
+            update
+        end
         generate_reachability_graph unless (@graph && @up_to_date)
         @graph
     end
@@ -305,6 +308,12 @@ Arcs
     end
 
     def get_marking(places)
+        unless places.class.to_s == "Array"
+            places = [places]
+        end
+        if places.first.class.to_s == "Fixnum"
+            places.map!{|p| get_place p}
+        end
         res = Array.new
         get_place_list.map{|place| if places.include? place.name then res << 1 else res << 0 end}
         res
@@ -427,7 +436,7 @@ Arcs
                 if node_id < 0
                     current_node = @graph.get_node node_id.abs
                 end
-                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(@graph, source: source, destination: current_node)# if node_id
+                @graph.add_edge PetriNet::ReachabilityGraph::Edge.new(@graph, source: source, destination: current_node, probability: @objects[tid].probability)# if node_id
                 reachability_helper get_markings, current_node if node_id >= 0
             end
             set_markings markings

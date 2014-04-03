@@ -48,12 +48,14 @@ class PetriNet::Graph < PetriNet::Base
             @objects[edge.id] = edge
             @edges[edge.name] = edge.id
             edge.graph = self
+            edge.source.outputs << edge.id
+            edge.destination.inputs << edge.id
             return edge.id
         end
         return false
     end
 
-    # Add an object to the Petri Net.
+    # Add an object to the Graph.
     def <<(object)
         case object.class.to_s
         when "Array"
@@ -69,7 +71,16 @@ class PetriNet::Graph < PetriNet::Base
     end
     alias_method :add_object, :<<
 
-    def get_node(id)
+    def get_node(node)
+        if node.class.to_s == "Fixnum"
+            return @objects[node]
+        end
+        if node.class.to_s == "Array"
+            return @objects.select{|o| o.class.to_s == "PetriNet::ReachabilityGraph::Node" && o.markings == node}.first
+        end
+    end
+
+    def get_object(id)
         @objects[id]
     end
 
@@ -163,6 +174,35 @@ class PetriNet::Graph < PetriNet::Base
         g.dijkstra_shortest_path(weights, start.to_s, destination.to_s)
     end
 
-    
+
+    def path_probability(path)
+
+    end
+
+    def node_probability(node)
+        
+    end
+
+    def get_paths(start, goal)
+        @reverse_paths = Array.new
+        path = get_paths_without_loops(get_node(start), get_node(goal)) 
+    end
+
+
+
+    def get_paths_without_loops(start, goal, reverse_path = Array.new)
+        if goal == start
+            @reverse_paths << reverse_path
+            return reverse_path
+        end
+        if reverse_path.include? goal
+            return nil
+        end
+        path = Array.new
+        goal.inputs.each do |input|
+            path  << get_paths_without_loops(start, @objects[input].source, reverse_path << goal)
+        end
+        path
+    end
 
 end
