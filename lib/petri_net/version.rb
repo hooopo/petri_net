@@ -1,6 +1,6 @@
 module PetriNet
     # Current Version
-    VERSION = "0.9.1"
+    VERSION = "0.9.2"
     # True if this is a debug-version and should not be used in productive systems
     DEBUG = false 
 end

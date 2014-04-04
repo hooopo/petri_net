@@ -206,6 +206,32 @@ class PetriNet::Graph < PetriNet::Base
         prob
     end
 
+    def best_path(start, node)
+        paths = get_paths_without_loops(start, node)
+        prob = 0
+        res_path = nil
+        paths.each do |path|
+            if (path_probability path) >= prob
+                prob = (path_probability path)
+                res_path = path
+            end
+        end
+        [res_path,prob]
+    end
+
+    def worst_path(start, node)
+        paths = get_paths_without_loops(start, node)
+        prob = 1
+        res_path = nil
+        paths.each do |path|
+            if (path_probability path) <= prob
+                prob = (path_probability path)
+                res_path = path
+            end
+        end
+        [res_path,prob]
+    end
+
     def get_paths_without_loops(start, goal)
         get_paths_without_loops_helper(get_node(start), get_node(goal)) 
     end
