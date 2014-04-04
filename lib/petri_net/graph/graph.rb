@@ -55,6 +55,16 @@ class PetriNet::Graph < PetriNet::Base
         return false
     end
 
+    def get_edge(source, dest)
+        res = nil
+        @edges.each_value do |edge|
+            if @objects[edge].source == source && @objects[edge].destination == dest
+                res = @objects[edge]
+            end
+        end
+        res
+    end
+
     # Add an object to the Graph.
     def <<(object)
         case object.class.to_s
@@ -176,23 +186,47 @@ class PetriNet::Graph < PetriNet::Base
 
 
     def path_probability(path)
-
+        sanitize_probabilities
+        prob = 1
+        counter = 0
+        path.each do |node|
+            edge = get_edge(path[counter+1], node)
+            node = prob * edge.probability unless edge.nil? # last node has no pre-edge
+            counter = counter += 1
+        end
+        prob
     end
 
-    def node_probability(node)
-        
+    def node_probability(start, node)
+        paths = get_paths_without_loops(start, node)
+        prob = 0
+        paths.each do |path|
+            prob = prob + (path_probability path)
+        end
+        prob
     end
 
-    def get_paths(start, goal)
-        @reverse_paths = Array.new
-        path = get_paths_without_loops(get_node(start), get_node(goal)) 
+    def get_paths_without_loops(start, goal)
+        get_paths_without_loops_helper(get_node(start), get_node(goal)) 
+    end
+
+    def sanitize_probabilities
+        @nodes.each_value do |node|
+            prob = 1.0
+            @objects[node].outputs.each do |edge|
+                prob = prob + @objects[edge].probability unless @objects[edge].probability.nil?
+            end
+            @objects[node].outputs.each do |edge|
+                @objects[edge].probability = prob/@objects[node].outputs.size if @objects[edge].probability.nil?
+            end
+        end
     end
 
 
-
-    def get_paths_without_loops(start, goal, reverse_path = Array.new)
+private
+    def get_paths_without_loops_helper(start, goal, reverse_paths = Array.new, reverse_path = Array.new)
         if goal == start
-            @reverse_paths << reverse_path
+            reverse_paths << reverse_path
             return reverse_path
         end
         if reverse_path.include? goal
@@ -200,9 +234,9 @@ class PetriNet::Graph < PetriNet::Base
         end
         path = Array.new
         goal.inputs.each do |input|
-            path  << get_paths_without_loops(start, @objects[input].source, reverse_path << goal)
+            path  << get_paths_without_loops_helper(start, @objects[input].source, reverse_paths, reverse_path << goal)
         end
-        path
+        reverse_paths
     end
 
 end
