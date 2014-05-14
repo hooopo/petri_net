@@ -191,7 +191,7 @@ class PetriNet::Graph < PetriNet::Base
         counter = 0
         path.each do |node|
             edge = get_edge(path[counter+1], node)
-            node = prob * edge.probability unless edge.nil? # last node has no pre-edge
+            prob = prob * edge.probability unless edge.nil? # last node has no pre-edge
             counter = counter += 1
         end
         prob
