@@ -252,17 +252,18 @@ class PetriNet::Graph < PetriNet::Base
 private
     def get_paths_without_loops_helper(start, goal, reverse_paths = Array.new, reverse_path = Array.new)
         if goal == start
+            reverse_path << goal
             reverse_paths << reverse_path
-            return reverse_path
+            return nil 
         end
         if reverse_path.include? goal
             return nil
         end
         path = Array.new
         goal.inputs.each do |input|
-            path  << get_paths_without_loops_helper(start, @objects[input].source, reverse_paths, reverse_path << goal)
+            get_paths_without_loops_helper(start, @objects[input].source, reverse_paths, reverse_path.clone << goal)
         end
-        reverse_paths
+        reverse_paths 
     end
 
 end
