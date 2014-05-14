@@ -390,7 +390,7 @@ Arcs
     end
 
     def s_invariant
-
+        raise "Not jet implemented"
     end
 
     private
