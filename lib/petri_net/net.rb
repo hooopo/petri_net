@@ -333,7 +333,8 @@ Arcs
     end
 
     def get_place_from_marking(marking)
-        raise "Not implemented jet"
+        return marking if marking.count(1) != 1
+        get_place_list[marking.index(1)].name
     end
 
 
