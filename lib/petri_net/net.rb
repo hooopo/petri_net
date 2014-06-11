@@ -177,7 +177,7 @@ Arcs
         return str
     end
 
-    def to_gv_new(output = 'png', filename = '')
+    def to_gv(output = 'png', filename = '')
         g = generate_gv
         if filename.empty?
             filename = "#{@name}_net.png"

@@ -59,7 +59,7 @@ Edges
 
     def test_to_gv
         fill_net
-#        @net.generate_reachability_graph().to_gv_new
+#        @net.generate_reachability_graph().to_gv
     end
 
     def test_simple_net_1
@@ -134,7 +134,7 @@ Edges
         @net << PetriNet::Arc.new(source:@net.get_place('B'), destination:@net.get_transition('T2'))
         @net << PetriNet::Arc.new(source:@net.get_transition('T2'), destination:@net.get_place('A'))
         @net.get_place('A').add_marking
-        @net.to_gv_new
+        @net.to_gv
         rn = @net.generate_reachability_graph
         assert_equal "Reachability Graph [SimpleNet5]\n----------------------------\nDescription: \nFilename: \n\nNodes\n----------------------------\n9: Node9 ([1, 0])\n10: Node10 ([0, 1])\n\nEdges\n----------------------------\n11: Edge11 9: Node9 ([1, 0]) -> 10: Node10 ([0, 1]) )\n13: Edge13 10: Node10 ([0, 1]) -> 9: Node9 ([1, 0]) )\n\n", rn.to_s
 
@@ -159,7 +159,7 @@ Edges
         @net << PetriNet::Arc.new(source:@net.get_place('D'), destination:@net.get_transition('T3'))
         @net << PetriNet::Arc.new(source:@net.get_transition('T3'), destination:@net.get_place('A'))
         @net.get_place('A').add_marking
-        @net.to_gv_new
+        @net.to_gv
         rg = @net.generate_reachability_graph
 
         rg.to_gv
@@ -194,7 +194,7 @@ Edges
         @net << PetriNet::Arc.new(source:@net.get_transition('T1'), destination:@net.get_place('B'))
         @net << PetriNet::Arc.new(source:@net.get_transition('T2'), destination:@net.get_place('A'))
         @net.get_place('A').add_marking
-        @net.to_gv_new
+        @net.to_gv
         rg = @net.generate_reachability_graph 
         rg.to_gv
         assert_equal "Reachability Graph [LoopedNet1]\n----------------------------\nDescription: \nFilename: \n\nNodes\n----------------------------\n9: Node9 ([1, 0])\n10: Node10 ([0, 1])\n\nEdges\n----------------------------\n11: Edge11 9: Node9 ([1, 0]) -> 10: Node10 ([0, 1]) )\n13: Edge13 10: Node10 ([0, 1]) -> 9: Node9 ([1, 0]) )\n\n", rg.to_s

@@ -118,17 +118,34 @@ class PetriNet::Graph < PetriNet::Base
         g.output
     end
 
-    def generate_gv
+    def generate_gv(named = true)
         g = GraphViz.new( :G, :type => :digraph )
 
         @nodes.each_value do |node|
-            gv_node = g.add_nodes( @objects[node].markings.to_s )
+            if named
+                label = (@net.get_place_from_marking @objects[node].markings).to_s
+            else
+                label =  @objects[node].markings.to_s
+            end
+            gv_node = g.add_nodes( label )
             gv_node.set do |n|
-                n.label = '*' + @objects[node].markings.to_s + '*' if @objects[node].start 
+                n.label = '*' + label + '*' if @objects[node].start 
             end
         end
         @edges.each_value do |edge|
-            gv_edge = g.add_edges( @objects[edge].source.markings.to_s, @objects[edge].destination.markings.to_s )
+
+            if named
+                label1 = (@net.get_place_from_marking @objects[edge].source.markings).to_s
+            else
+                label1 =  @objects[edge].source.markings.to_s
+            end
+
+            if named
+                label2 = (@net.get_place_from_marking @objects[edge].destination.markings).to_s
+            else
+                label2 =  @objects[edge].destination.markings.to_s
+            end
+            gv_edge = g.add_edges( label1, label2 )
             gv_edge.set do |e|
                 e.label = @objects[edge].transition
             end
