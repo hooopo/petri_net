@@ -249,6 +249,55 @@ class PetriNet::Graph < PetriNet::Base
         [res_path,prob]
     end
 
+    def get_most_relative_influence_on_path(start, node, factor = 0.5)
+        prob_counter = 0
+        prob_diff = Array.new
+        paths = get_paths_without_loops(start, node)
+        paths.each do |path|
+            counter = 0
+            path.each do |curr_node|
+                prob_before = node_probability start, node
+                unless node == path[-1]
+                    edge = get_edge(path[counter + 1], curr_node)
+                    save = edge.probability unless edge.nil?
+                    edge.probability += (1 - edge.probability) * factor unless edge.nil?
+                    prob_after = node_probability start, node unless edge.nil?
+                    edge.probability = save unless edge.nil?
+                    prob_diff[prob_counter] = [prob_after - prob_before, [curr_node, path[counter+1]]] unless edge.nil?
+                    prob_counter += 1 unless edge.nil?
+                    counter += 1
+                end
+            end
+        end
+        prob_diff.sort{|x,y| x[0] <=> y[0]}.last
+    end
+
+    def get_most_absolute_influence_on_path(start, node, sum = 0.01)
+        prob_counter = 0
+        prob_diff = Array.new
+        paths = get_paths_without_loops(start, node)
+        paths.each do |path|
+            counter = 0
+            path.each do |curr_node|
+                prob_before = node_probability start, node
+                unless node == path[-1]
+                    edge = get_edge(path[counter + 1], curr_node)
+                    save = edge.probability unless edge.nil?
+                    edge.probability = edge.probability + sum unless edge.nil?
+                    if !edge.nil? && edge.probability > 1
+                        edge.probability = 1
+                    end
+                    prob_after = node_probability start, node unless edge.nil?
+                    edge.probability = save unless edge.nil?
+                    prob_diff[prob_counter] = [prob_after - prob_before, [curr_node, path[counter+1]]] unless edge.nil?
+                    prob_counter += 1 unless edge.nil?
+                    counter += 1
+                end
+            end
+        end
+        prob_diff.sort{|x,y| x[0] <=> y[0]}.last
+    end
+
     def get_paths_without_loops(start, goal)
         get_paths_without_loops_helper(get_node(start), get_node(goal)) 
     end
