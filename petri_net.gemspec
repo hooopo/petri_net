@@ -12,12 +12,12 @@ Gem::Specification.new do |gem|
   gem.files         = `git ls-files`.split($OUTPUT_RECORD_SEPARATOR)
   gem.executables   = gem.files.grep(%r{^bin/}).map { |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.name          = 'petri_net'
+  gem.name          = 'petri_net_2020'
   gem.require_paths = ['lib']
   gem.version       = PetriNet::VERSION
 
   gem.license       = 'MIT'
   gem.add_dependency 'ruby-graphviz'
-  #  gem.add_dependency "rgl"
+  gem.add_dependency "rgl"
   gem.add_development_dependency 'net-sftp'
 end

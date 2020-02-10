@@ -1,36 +1,32 @@
 # frozen_string_literal: true
 
-require 'rubygems'
-require 'rake'
-require 'rake/testtask'
-require 'rake/tasklib'
-require 'rdoc/rdoc'
-require 'rdoc/task'
+begin
+  require "bundler/setup"
+rescue LoadError
+  puts "You must `gem install bundler` and `bundle install` to run rake tasks"
+end
 
-require 'net/sftp'
-require 'fileutils'
+require "rdoc/task"
 
-desc 'Default task'
-task default: %i[test rdoc clean]
+RDoc::Task.new(:rdoc) do |rdoc|
+  rdoc.rdoc_dir = "rdoc"
+  rdoc.title    = "Wf"
+  rdoc.options << "--line-numbers"
+  rdoc.rdoc_files.include("README.md")
+  rdoc.rdoc_files.include("lib/**/*.rb")
+end
 
-task(:test) { puts '==> Running main test suite' }
+APP_RAKEFILE = File.expand_path("test/dummy/Rakefile", __dir__)
+
+
+require "bundler/gem_tasks"
+
+require "rake/testtask"
+
 Rake::TestTask.new(:test) do |t|
-  t.test_files = FileList['test/ts_all']
-  t.ruby_opts = ['-rubygems'] if defined? Gem
+  t.libs << "test"
+  t.pattern = "test/**/*_test.rb"
+  t.verbose = false
 end
 
-Rake::RDocTask.new(:rdoc) do |rdoc|
-  rdoc.main = 'README'
-  rdoc.rdoc_files.include('LICENSE', 'CHANGELOG', 'lib/')
-  rdoc.title = 'PetriNet Documentation'
-  #  rdoc.options << '--webcvs=http://svn.wildcoder.com/svn/petri/trunk/'
-  rdoc.rdoc_dir = 'doc' # rdoc output folder
-end
-
-desc 'Clean up unused files.'
-task clean: :clobber_rdoc do
-end
-
-desc 'Run tests.'
-task :test do
-end
+task default: :test
